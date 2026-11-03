@@ -1,0 +1,61 @@
+# Automazioni di Jarvis.
+# "quando" usa il formato cron: minuto ora giorno-del-mese mese giorno-della-settimana
+#   "30 8 * * 1-5"  = alle 8:30, dal lunedì al venerdì
+#   "0 9-19 * * 1-5" = ogni ora dalle 9 alle 19, giorni feriali
+# "richiede": l'automazione viene saltata se manca il collegamento (google, wordpress, prestashop, siti)
+# "effort": quanto ragiona Jarvis (low, medium, high). Più alto = più accurato ma più costoso.
+# Dopo una modifica, riavvia Jarvis.
+
+monitoraggio_siti_minuti: 30   # controllo dei siti senza AI (gratis)
+
+automazioni:
+  - nome: briefing-mattutino
+    titolo: Briefing del mattino
+    quando: "30 8 * * 1-5"
+    attiva: true
+    effort: medium
+    prompt: |
+      È ora del briefing del mattino. Leggi la procedura procedure/briefing.md e seguila.
+      Usa gli strumenti per raccogliere i dati (Gmail, CRM, siti, PrestaShop): salta senza
+      commentare le fonti non configurate.
+
+  - nome: gestione-lead
+    titolo: Nuovi lead dalle email
+    quando: "15 9-19 * * 1-5"
+    attiva: true
+    richiede: [google]
+    # prima controlla gratis (senza AI) se ci sono email: se no, salta e non spende nulla
+    precontrollo_gmail: "newer_than:2d -label:Jarvis-elaborata -category:promotions -category:social in:inbox"
+    effort: medium
+    prompt: |
+      Controlla le email arrivate con la ricerca Gmail
+      "newer_than:2d -label:Jarvis-elaborata -category:promotions -category:social in:inbox".
+      Per ogni richiesta di un potenziale cliente segui procedure/risposta-lead.md.
+      Alle email che NON sono lead aggiungi comunque l'etichetta Jarvis-elaborata, così non le rileggi.
+      Se non ci sono nuovi lead rispondi solo "Nessun nuovo lead".
+
+  - nome: report-negozi
+    titolo: Report settimanale negozi
+    quando: "15 9 * * 1"
+    attiva: true
+    richiede: [prestashop]
+    effort: medium
+    prompt: |
+      Prepara il report settimanale per ogni negozio PrestaShop configurato: vendite degli ultimi
+      7 giorni e degli ultimi 30 (ordini, fatturato, scontrino medio), prodotti con scorte basse,
+      nuovi clienti. Aggiungi 2-3 consigli pratici per migliorare le vendite. Salva il report come
+      Google Doc (se Google è collegato) con titolo "Report <negozio> - <data>".
+
+  - nome: auto-revisione
+    titolo: Auto-revisione settimanale
+    quando: "40 17 * * 5"
+    attiva: true
+    effort: high
+    prompt: |
+      È il momento della tua revisione settimanale. Usa jarvis_registro (7 giorni) e leggi
+      lezioni.md e le procedure. Analizza: errori ripetuti, azioni che l'utente ha rifiutato,
+      compiti che hai svolto più volte senza una procedura. Poi:
+      1) aggiorna o crea le procedure in procedure/ dove serve;
+      2) se ritieni utile cambiare le tue regole, usa proponi_modifica_regole (l'utente approverà);
+      3) proponi all'utente al massimo 3 nuove automazioni o miglioramenti, con il beneficio concreto.
+      Rispondi con un riepilogo breve di cosa hai cambiato e cosa proponi.

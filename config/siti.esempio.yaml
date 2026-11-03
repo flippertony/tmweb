@@ -1,0 +1,37 @@
+# Copia questo file in "siti.yaml" e inserisci i siti dei tuoi clienti.
+# siti.yaml contiene password: resta solo sul tuo PC (è escluso da GitHub).
+#
+# Ogni sito può avere:
+#   url            -> obbligatorio, viene monitorato (online, velocità, SSL)
+#   cliente        -> nome del cliente (facoltativo)
+#   wordpress      -> per leggere/creare contenuti. La "password applicazione" si crea in
+#                     WordPress: Utenti > Profilo > Password applicazione (NON è la password di login)
+#   prestashop     -> per ordini e vendite. La chiave si crea in PrestaShop:
+#                     Parametri avanzati > Webservice > Aggiungi chiave (permessi GET su
+#                     orders, products, stock_availables, customers)
+
+siti:
+  studio:
+    url: https://www.tuosito.it
+    cliente: Il mio studio
+    wordpress:
+      utente: admin
+      password_applicazione: "xxxx xxxx xxxx xxxx xxxx xxxx"
+
+  rossi-arredamenti:
+    url: https://www.rossiarredamenti.it
+    cliente: Rossi Arredamenti
+    wordpress:
+      utente: jarvis
+      password_applicazione: "xxxx xxxx xxxx xxxx xxxx xxxx"
+
+  negozio-bianchi:
+    url: https://shop.bianchi.it
+    cliente: Bianchi Abbigliamento
+    prestashop:
+      chiave_api: "CHIAVE32CARATTERIDELWEBSERVICE00"
+
+  # Solo monitoraggio, senza accesso ai contenuti:
+  sito-verdi:
+    url: https://www.verdi.it
+    cliente: Verdi Srl

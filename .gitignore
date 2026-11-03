@@ -1,0 +1,12 @@
+# Segreti e dati personali: non vanno mai su GitHub
+.env
+config/siti.yaml
+config/google_credentials.json
+config/google_token.json
+dati/
+
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc

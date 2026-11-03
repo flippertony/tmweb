@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Jarvis</title>
+<link rel="stylesheet" href="/static/stile.css">
+</head>
+<body>
+<aside class="laterale">
+  <div class="logo"><span class="nucleo"></span> JARVIS</div>
+  <nav>
+    <button data-vista="chat" class="attiva">💬 Chat</button>
+    <button data-vista="approvazioni">✅ Approvazioni <b id="badge-appr" class="badge"></b></button>
+    <button data-vista="notifiche">🔔 Notifiche <b id="badge-not" class="badge"></b></button>
+    <button data-vista="crm">👥 CRM</button>
+    <button data-vista="siti">🌐 Siti clienti</button>
+    <button data-vista="automazioni">⏰ Automazioni</button>
+    <button data-vista="registro">📜 Registro</button>
+  </nav>
+  <div class="stato" id="stato"></div>
+  <button id="btn-pausa" class="pausa">⏸ Pausa di emergenza</button>
+</aside>
+
+<main>
+  <!-- CHAT -->
+  <section id="vista-chat" class="vista attiva">
+    <div class="chat-layout">
+      <div class="storico">
+        <button id="nuova-chat" class="primario">+ Nuova conversazione</button>
+        <ul id="lista-conv"></ul>
+      </div>
+      <div class="chat">
+        <div id="messaggi" class="messaggi">
+          <div class="benvenuto">
+            <div class="nucleo grande"></div>
+            <h1>Ciao, sono Jarvis.</h1>
+            <p>Chiedimi qualcosa oppure prova:</p>
+            <div class="suggerimenti">
+              <button>Presentati e chiedimi le informazioni per compilare il mio profilo</button>
+              <button>Cosa c'è di importante nelle email di oggi?</button>
+              <button>Com'è messa la pipeline commerciale?</button>
+              <button>Controlla lo stato dei siti dei clienti</button>
+            </div>
+          </div>
+        </div>
+        <form id="form-chat" class="input-chat">
+          <button type="button" id="btn-mic" title="Parla (Chrome/Edge)">🎙️</button>
+          <textarea id="testo" rows="1" placeholder="Scrivi a Jarvis… (Invio per inviare, Maiusc+Invio per andare a capo)"></textarea>
+          <button type="submit" class="primario">Invia</button>
+        </form>
+        <label class="voce"><input type="checkbox" id="leggi-risposte"> Leggi ad alta voce le risposte</label>
+      </div>
+    </div>
+  </section>
+
+  <!-- APPROVAZIONI -->
+  <section id="vista-approvazioni" class="vista">
+    <h2>Approvazioni</h2>
+    <p class="nota">Le azioni che Jarvis non può fare da solo aspettano qui la tua decisione.</p>
+    <div class="schede-filtro">
+      <button data-stato="in_attesa" class="attiva">In attesa</button>
+      <button data-stato="approvata">Approvate</button>
+      <button data-stato="rifiutata">Rifiutate</button>
+    </div>
+    <div id="lista-approvazioni"></div>
+  </section>
+
+  <!-- NOTIFICHE -->
+  <section id="vista-notifiche" class="vista">
+    <h2>Notifiche</h2>
+    <div id="lista-notifiche"></div>
+  </section>
+
+  <!-- CRM -->
+  <section id="vista-crm" class="vista">
+    <h2>CRM</h2>
+    <div class="schede-filtro">
+      <button data-crm="pipeline" class="attiva">Pipeline</button>
+      <button data-crm="contatti">Contatti</button>
+    </div>
+    <div id="crm-pipeline" class="pipeline"></div>
+    <div id="crm-contatti" class="nascosto">
+      <div class="barra">
+        <input id="cerca-contatti" placeholder="Cerca nome, azienda, email, tag…">
+        <button id="nuovo-contatto" class="primario">+ Contatto</button>
+      </div>
+      <table class="tabella"><thead><tr><th>Nome</th><th>Azienda</th><th>Email</th><th>Telefono</th><th>Stato</th><th>Tag</th></tr></thead>
+      <tbody id="tab-contatti"></tbody></table>
+    </div>
+  </section>
+
+  <!-- SITI -->
+  <section id="vista-siti" class="vista">
+    <h2>Siti clienti <button id="controlla-siti" class="piccolo">Controlla ora</button></h2>
+    <p class="nota">Controllati in automatico ogni 30 minuti. Aggiungi i siti in <code>config/siti.yaml</code>.</p>
+    <div id="griglia-siti" class="griglia"></div>
+  </section>
+
+  <!-- AUTOMAZIONI -->
+  <section id="vista-automazioni" class="vista">
+    <h2>Automazioni</h2>
+    <p class="nota">Si modificano in <code>config/automazioni.yaml</code> (poi riavvia Jarvis).</p>
+    <div id="lista-automazioni"></div>
+  </section>
+
+  <!-- REGISTRO -->
+  <section id="vista-registro" class="vista">
+    <h2>Registro azioni</h2>
+    <p class="nota">Tutto quello che Jarvis ha fatto, in ordine.</p>
+    <table class="tabella"><thead><tr><th>Quando</th><th>Strumento</th><th>Dati</th><th>Esito</th></tr></thead>
+    <tbody id="tab-registro"></tbody></table>
+  </section>
+</main>
+
+<dialog id="dlg-contatto">
+  <form method="dialog" id="form-contatto">
+    <h3 id="titolo-contatto">Contatto</h3>
+    <input type="hidden" name="id">
+    <label>Nome* <input name="nome" required></label>
+    <label>Azienda <input name="azienda"></label>
+    <label>Email <input name="email" type="email"></label>
+    <label>Telefono <input name="telefono"></label>
+    <label>Sito web <input name="sito_web"></label>
+    <label>Fonte <input name="fonte" placeholder="modulo sito, passaparola…"></label>
+    <label>Stato <select name="stato"><option>lead</option><option>cliente</option><option>ex_cliente</option><option>non_interessato</option></select></label>
+    <label>Tag <input name="tag"></label>
+    <label>Note <textarea name="note" rows="3"></textarea></label>
+    <div id="storico-contatto"></div>
+    <div class="azioni-dlg"><button value="annulla" formnovalidate>Annulla</button><button value="salva" class="primario">Salva</button></div>
+  </form>
+</dialog>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

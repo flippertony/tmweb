@@ -1,0 +1,40 @@
+<%- include('_top') %>
+<% if (E.help) { %><p class="help"><%= E.help %></p><% } %>
+<form method="post" action="/admin/<%= key %>/salva" class="entity-form" data-entity="<%= key %>">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <input type="hidden" name="id" value="<%= row.id || '' %>">
+  <div class="panel form-grid">
+  <% fields.forEach(function(f){ const name = f[0], label = f[1], type = f[2], o = f[3] || {}; const v = row[name]; %>
+    <% if (type === 'checkbox') { %>
+      <label class="check"><input type="checkbox" name="<%= name %>" <%= v ? 'checked' : '' %>> <%= label %></label>
+    <% } else if (type === 'select') { %>
+      <label><%= label %><select name="<%= name %>"><% o.options.forEach(function(op){ %><option value="<%= op[0] %>" <%= String(v ?? '') === String(op[0]) ? 'selected' : '' %>><%= op[1] %></option><% }) %></select></label>
+    <% } else if (type === 'markdown' || type === 'textarea' || type === 'csv') { %>
+      <label class="span-2"><%= label %>
+        <textarea name="<%= name %>" rows="<%= type === 'markdown' ? 12 : type === 'csv' ? 10 : 4 %>" class="<%= type === 'csv' ? 'mono' : '' %>" <%= type === 'csv' ? 'data-csv' : '' %>><%= v || '' %></textarea>
+        <% if (type === 'csv') { %><span class="hint">Esempio:<br><code>Anno,Italia,Media UE<br>2022,6,8<br>2023,8,10</code></span><% } %>
+      </label>
+    <% } else if (type === 'slug') { %>
+      <label><%= label %> <span class="hint">vuoto = generato automaticamente</span><input name="slug" value="<%= row.slug || '' %>"></label>
+    <% } else if (type === 'image') { %>
+      <label><%= label %><input name="<%= name %>" value="<%= v || '' %>" placeholder="/uploads/…"></label>
+    <% } else { %>
+      <label><%= label %>
+        <input name="<%= name %>" value="<%= v ?? '' %>" type="<%= type === 'url' ? 'url' : type === 'number' ? 'number' : type === 'date' ? 'date' : type === 'color' ? 'color' : 'text' %>"
+          <%= o.step ? 'step=' + o.step : (type === 'number' ? 'step=1' : '') %> <%= o.min !== undefined ? 'min=' + o.min : '' %> <%= o.max !== undefined ? 'max=' + o.max : '' %>
+          <%= o.required ? 'required' : '' %> placeholder="<%= o.placeholder || '' %>">
+      </label>
+    <% } %>
+  <% }) %>
+  </div>
+  <% if (key === 'dati') { %>
+  <div class="panel"><h2>Anteprima infografica</h2><div class="chart-box" data-chart-preview><%- preview %></div></div>
+  <% } %>
+  <div class="btn-row sticky-actions">
+    <button class="btn btn-primary" type="submit">Salva</button>
+    <a class="btn" href="/admin/<%= key %>">Annulla</a>
+    <% if (row.id && E.publicPath) { %><a class="btn" href="<%= E.publicPath(row) %>" target="_blank" rel="noopener">Vedi sul sito ↗</a><% } %>
+    <% if (row.id) { %><button class="btn btn-danger" type="submit" formaction="/admin/<%= key %>/<%= row.id %>/elimina" formnovalidate data-confirm="Eliminare definitivamente?">Elimina</button><% } %>
+  </div>
+</form>
+<%- include('_bottom') %>

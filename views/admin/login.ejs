@@ -1,0 +1,14 @@
+<%- include('_auth') %>
+<main class="auth-card">
+  <p class="adm-logo"><span class="adm-logo-mark">TM</span> <%= s.site_name %> <small>CMS</small></p>
+  <h1>Accedi al pannello</h1>
+  <% if (error) { %><div class="flash err" role="alert"><%= error %></div><% } %>
+  <form method="post" action="/admin/login" class="form">
+    <input type="hidden" name="next" value="<%= next %>">
+    <label>Email <input type="email" name="email" required autocomplete="username" autofocus></label>
+    <label>Password <input type="password" name="password" required autocomplete="current-password"></label>
+    <button class="btn btn-primary btn-block" type="submit">Entra</button>
+  </form>
+  <p class="small muted"><a href="/">← Torna al sito</a></p>
+</main>
+</body></html>

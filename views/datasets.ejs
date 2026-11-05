@@ -1,0 +1,19 @@
+<%- include('partials/top') %>
+<div class="wrap">
+  <%- include('partials/crumbs') %>
+  <header class="page-head">
+    <h1>Dati e infografiche</h1>
+    <p class="lead">Statistiche da fonti ufficiali e ricerche indipendenti, trasformate in grafici chiari. Ogni infografica è scaricabile in CSV e si può incorporare liberamente citando la fonte.</p>
+  </header>
+  <div class="grid grid-2">
+    <% list.forEach(function(d){ %>
+    <article class="data-card">
+      <a href="/dati/<%= d.slug %>" class="data-card-chart" aria-hidden="true" tabindex="-1"><%- d.svg %></a>
+      <h2 class="card-title"><a href="/dati/<%= d.slug %>"><%= d.title %></a></h2>
+      <% if (d.insight) { %><p><%= d.insight %></p><% } %>
+      <p class="card-meta">Fonte: <%= d.source_name || '—' %><% if (d.period) { %> · <%= d.period %><% } %><% if (!d.verified) { %> · <span class="badge badge-warn">dati dimostrativi</span><% } %></p>
+    </article>
+    <% }) %>
+  </div>
+</div>
+<%- include('partials/bottom') %>

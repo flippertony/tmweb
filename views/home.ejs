@@ -1,0 +1,97 @@
+<%- include('partials/top') %>
+<div class="wrap">
+  <h1 class="sr-only"><%= s.site_name %>: <%= s.site_tagline %></h1>
+
+  <section class="hero" aria-label="In evidenza">
+    <% if (featured) { const a = featured; %>
+    <article class="hero-main">
+      <a class="hero-media" href="/articoli/<%= a.slug %>" tabindex="-1" aria-hidden="true" style="--c:<%= a.category_color || '#4f46e5' %>">
+        <% if (a.cover_image) { %><img src="<%= a.cover_image %>" alt="" width="1200" height="630" fetchpriority="high" decoding="async"><% } else { %><span class="hero-gen"><span><%= a.category_name || 'In evidenza' %></span></span><% } %>
+      </a>
+      <div class="hero-body">
+        <% if (a.category_name) { %><a class="pill" href="/categoria/<%= a.category_slug %>" style="--c:<%= a.category_color %>"><%= a.category_name %></a><% } %>
+        <h2 class="hero-title"><a href="/articoli/<%= a.slug %>"><%= a.title %></a></h2>
+        <p class="hero-dek"><%= h.truncate(a.excerpt || h.stripMd(a.tldr), 220) %></p>
+        <p class="card-meta"><%= a.author_name ? 'di ' + a.author_name + ' · ' : '' %><time datetime="<%= a.published_at %>"><%= h.fmtDate(a.published_at) %></time> · <%= a.reading_time %> min di lettura</p>
+      </div>
+    </article>
+    <% } %>
+    <aside class="trending" aria-labelledby="trend-h">
+      <h2 id="trend-h" class="section-label"><span class="dot-live" aria-hidden="true"></span> Di tendenza ora</h2>
+      <ol class="trend-list">
+        <% trending.forEach(function(a){ %>
+        <li><a href="/articoli/<%= a.slug %>"><span class="trend-cat"><%= a.category_name || '' %></span><%= a.title %></a></li>
+        <% }) %>
+      </ol>
+      <a class="quick-tool" href="/modelli-ai/calcolatore-costi">
+        <strong>Calcolatore costi API AI</strong>
+        <span>Quanto ti costa davvero un modello? Stima mensile in 10 secondi →</span>
+      </a>
+    </aside>
+  </section>
+
+  <section class="section" aria-labelledby="latest-h">
+    <div class="section-head"><h2 id="latest-h">Ultime notizie</h2><a href="/articoli" class="link-more">Tutti gli articoli →</a></div>
+    <div class="grid grid-3">
+      <% latest.forEach(function(a){ %><%- include('partials/card', { a: a }) %><% }) %>
+    </div>
+  </section>
+
+  <% if (models.length) { %>
+  <section class="section band" aria-labelledby="models-h">
+    <div class="section-head"><h2 id="models-h">Classifica modelli AI</h2><a href="/modelli-ai" class="link-more">Confronto completo →</a></div>
+    <div class="table-wrap">
+      <table class="rank-table">
+        <thead><tr><th scope="col">#</th><th scope="col">Modello</th><th scope="col">Provider</th><th scope="col">Contesto</th><th scope="col">$ input / 1M</th><th scope="col">Punteggio</th></tr></thead>
+        <tbody>
+        <% models.forEach(function(m, i){ const sc = Math.round((m.score_reasoning + m.score_coding + m.score_speed + m.score_value) / 4); %>
+          <tr>
+            <td><%= i + 1 %></td>
+            <th scope="row"><a href="/modelli-ai/<%= m.slug %>"><%= m.name %></a><% if (m.open_weights) { %> <span class="badge badge-ok">open</span><% } %></th>
+            <td><%= m.provider %></td>
+            <td><%= m.context_window ? h.compact(m.context_window) : '—' %></td>
+            <td><%= m.input_price != null ? '$' + h.fmtNumber(m.input_price, 2) : '—' %></td>
+            <td><span class="meter" role="img" aria-label="<%= sc %> su 100"><span style="width:<%= sc %>%"></span></span> <b><%= sc %></b></td>
+          </tr>
+        <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <p class="small muted">Valutazioni editoriali su ragionamento, coding, velocità e rapporto qualità/prezzo. <a href="/p/metodologia-editoriale">Metodologia</a>.</p>
+  </section>
+  <% } %>
+
+  <% if (datasets.length) { %>
+  <section class="section" aria-labelledby="data-h">
+    <div class="section-head"><h2 id="data-h">I dati della settimana</h2><a href="/dati" class="link-more">Tutte le infografiche →</a></div>
+    <div class="grid grid-2">
+      <% datasets.forEach(function(d){ %>
+      <figure class="infographic">
+        <%- d.svg %>
+        <figcaption><strong><%= d.insight %></strong> <a href="/dati/<%= d.slug %>">Dati e fonte →</a></figcaption>
+      </figure>
+      <% }) %>
+    </div>
+  </section>
+  <% } %>
+
+  <% sections.forEach(function(sec){ %>
+  <section class="section" aria-labelledby="cat-<%= sec.cat.slug %>">
+    <div class="section-head"><h2 id="cat-<%= sec.cat.slug %>"><span class="cat-dot" style="--c:<%= sec.cat.color %>"></span><%= sec.cat.name %></h2><a href="/categoria/<%= sec.cat.slug %>" class="link-more">Vedi tutto →</a></div>
+    <div class="grid grid-4">
+      <% sec.items.forEach(function(a){ %><%- include('partials/card', { a: a, variant: 'small' }) %><% }) %>
+    </div>
+  </section>
+  <% }) %>
+
+  <% if (topTools.length) { %>
+  <section class="section" aria-labelledby="tools-h">
+    <div class="section-head"><h2 id="tools-h">Strumenti consigliati dalla redazione</h2><a href="/strumenti" class="link-more">Tutti gli strumenti →</a></div>
+    <div class="grid grid-2">
+      <% topTools.forEach(function(t){ %><%- comp.toolBox(t, { compact: true }) %><% }) %>
+    </div>
+    <p class="small muted"><%= s.affiliate_disclosure %></p>
+  </section>
+  <% } %>
+</div>
+<%- include('partials/bottom') %>

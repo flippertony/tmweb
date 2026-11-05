@@ -1,0 +1,54 @@
+<%- include('_top') %>
+<div class="kpis">
+  <div class="kpi"><span>Visualizzazioni (30 gg)</span><b><%= h.compact(totals.views) %></b></div>
+  <div class="kpi"><span>Click affiliati (30 gg)</span><b><%= h.compact(totals.clicks) %></b></div>
+  <div class="kpi"><span>Ricavi affiliati stimati (30 gg)</span><b>€ <%= h.fmtNumber(estRevenue, 2) %></b><small>tasso conv. <%= s.affiliate_conversion_rate %>% × commissione</small></div>
+  <div class="kpi"><span>Nuovi iscritti (30 gg)</span><b><%= h.compact(totals.subs) %></b><small><%= counts.subscribers %> totali</small></div>
+</div>
+<div class="kpis kpis-sm">
+  <a class="kpi" href="/admin/articoli?stato=published"><span>Pubblicati</span><b><%= counts.published %></b></a>
+  <a class="kpi" href="/admin/articoli?stato=draft"><span>Bozze</span><b><%= counts.drafts %></b></a>
+  <a class="kpi" href="/admin/articoli?stato=scheduled"><span>Programmati</span><b><%= counts.scheduled %></b></a>
+  <a class="kpi" href="/admin/strumenti"><span>Strumenti affiliati</span><b><%= counts.tools %></b></a>
+  <a class="kpi" href="/admin/modelli"><span>Modelli AI</span><b><%= counts.models %></b></a>
+  <a class="kpi" href="/admin/dati"><span>Dataset</span><b><%= counts.datasets %></b></a>
+</div>
+
+<section class="panel"><h2>Traffico e click affiliati</h2><div class="chart-box"><%- trafficSvg %></div></section>
+
+<div class="cols-2">
+  <section class="panel">
+    <h2>Affiliazioni più cliccate (30 gg)</h2>
+    <table class="tbl"><thead><tr><th>Strumento</th><th class="num">Click</th><th class="num">Stima €</th></tr></thead><tbody>
+      <% topTools.forEach(function(t){ %><tr><td><a href="/admin/strumenti/<%= t.id %>"><%= t.name %></a></td><td class="num"><%= t.clicks30 %></td><td class="num"><%= h.fmtNumber(t.revenue, 2) %></td></tr><% }) %>
+      <% if (!topTools.length) { %><tr><td colspan="3" class="muted">Nessun dato ancora.</td></tr><% } %>
+    </tbody></table>
+    <% if (topSources.length) { %><p class="small muted">Pagine che generano più click: <% topSources.forEach(function(x){ %><code><%= x.source || '(diretto)' %></code> <%= x.n %> · <% }) %></p><% } %>
+  </section>
+  <section class="panel">
+    <h2>Articoli più letti</h2>
+    <table class="tbl"><thead><tr><th>Titolo</th><th class="num">Viste</th><th class="num">SEO/AEO/GEO</th></tr></thead><tbody>
+      <% topArticles.forEach(function(a){ %><tr><td><a href="/admin/articoli/<%= a.id %>"><%= h.truncate(a.title, 60) %></a></td><td class="num"><%= h.compact(a.views) %></td><td class="num"><%- include('_scores', { a: a }) %></td></tr><% }) %>
+    </tbody></table>
+  </section>
+</div>
+
+<section class="panel">
+  <h2>Da migliorare (punteggi più bassi)</h2>
+  <table class="tbl"><tbody>
+    <% toImprove.forEach(function(a){ %><tr><td><a href="/admin/articoli/<%= a.id %>"><%= a.title %></a> <% if (a.status === 'draft') { %><span class="tag">bozza</span><% } %></td><td class="num"><%- include('_scores', { a: a }) %></td></tr><% }) %>
+  </tbody></table>
+  <p><a href="/admin/seo">Apri il Centro SEO · GEO · AEO →</a></p>
+</section>
+
+<section class="panel tips">
+  <h2>Checklist di crescita</h2>
+  <ol>
+    <li>Collega il dominio a <strong>Google Search Console</strong> e <strong>Bing Webmaster Tools</strong> (Impostazioni → codici di verifica) e invia <code>/sitemap.xml</code> e <code>/sitemap-news.xml</code>.</li>
+    <li>Richiedi l'inclusione in <strong>Google News</strong> (Publisher Center) quando hai almeno 30-50 news originali.</li>
+    <li>Attiva <strong>IndexNow</strong> per l'indicizzazione istantanea su Bing (che alimenta anche ChatGPT Search e Copilot).</li>
+    <li>Pubblica 1 infografica originale a settimana e proponila a blog di settore: il codice di incorporamento crea backlink naturali.</li>
+    <li>Punta a punteggi AEO/GEO ≥ 80: risposta rapida, FAQ, fonti e dati numerici sono ciò che i motori AI citano.</li>
+  </ol>
+</section>
+<%- include('_bottom') %>

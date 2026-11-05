@@ -1,0 +1,26 @@
+<%- include('_top') %>
+<form method="post" action="/admin/impostazioni" class="entity-form">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <% groups.forEach(function(g){ %>
+  <section class="panel">
+    <h2><%= g[0] %></h2>
+    <div class="form-grid">
+    <% g[1].forEach(function(f){ const k = f[0], label = f[1], type = f[2]; %>
+      <% if (type === 'bool') { %>
+        <label class="check span-2"><input type="checkbox" name="<%= k %>" <%= s[k] === '1' ? 'checked' : '' %>> <%= label %></label>
+      <% } else if (type === 'textarea' || type === 'code') { %>
+        <label class="span-2"><%= label %><textarea name="<%= k %>" rows="<%= type === 'code' ? 5 : 3 %>" class="<%= type === 'code' ? 'mono' : '' %>"><%= s[k] %></textarea></label>
+      <% } else { %>
+        <label><%= label %><input name="<%= k %>" value="<%= s[k] %>"></label>
+      <% } %>
+    <% }) %>
+    </div>
+    <% if (g[0] === 'SEO · GEO · AEO') { %>
+    <p class="hint">File generati automaticamente: <a href="/robots.txt" target="_blank">robots.txt</a> · <a href="/sitemap.xml" target="_blank">sitemap.xml</a> · <a href="/sitemap-news.xml" target="_blank">sitemap-news.xml</a> · <a href="/llms.txt" target="_blank">llms.txt</a> · <a href="/llms-full.txt" target="_blank">llms-full.txt</a> · <a href="/feed.xml" target="_blank">RSS</a> · <a href="/feed.json" target="_blank">JSON Feed</a><% if (s.indexnow_key) { %> · <a href="/<%= s.indexnow_key %>.txt" target="_blank">chiave IndexNow</a><% } %></p>
+    <p class="hint">URL pubblico configurato: <code><%= siteUrl %></code> (variabile <code>SITE_URL</code> nel file .env)</p>
+    <% } %>
+  </section>
+  <% }) %>
+  <div class="btn-row sticky-actions"><button class="btn btn-primary" type="submit">Salva impostazioni</button></div>
+</form>
+<%- include('_bottom') %>

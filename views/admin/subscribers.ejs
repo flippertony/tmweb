@@ -1,0 +1,18 @@
+<%- include('_top') %>
+<div class="list-head">
+  <p class="help"><strong><%= total %></strong> iscritti. Esporta il CSV e importalo nel tuo servizio di invio (Brevo, MailerLite, Beehiiv, Substack…). Il consenso è registrato con data e ora.</p>
+  <% if (user.role === 'admin') { %><a class="btn btn-primary" href="/admin/iscritti/export.csv">Esporta CSV</a><% } %>
+</div>
+<div class="cols-2">
+  <div class="panel">
+    <table class="tbl"><thead><tr><th>Email</th><th>Fonte</th><th>Consenso</th><th></th></tr></thead><tbody>
+      <% list.forEach(function(x){ %><tr><td><%= x.email %></td><td><%= x.source || '—' %></td><td class="nowrap"><%= h.fmtDate(x.consent_at, true) %></td>
+      <td><% if (user.role === 'admin') { %><form method="post" action="/admin/iscritti/<%= x.id %>/elimina"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="linklike danger-link" data-confirm="Rimuovere l'iscritto?">Rimuovi</button></form><% } %></td></tr><% }) %>
+      <% if (!list.length) { %><tr><td colspan="4" class="muted">Nessun iscritto.</td></tr><% } %>
+    </tbody></table>
+  </div>
+  <div class="panel"><h2>Da dove arrivano</h2>
+    <table class="tbl"><tbody><% bySource.forEach(function(x){ %><tr><td><%= x.source %></td><td class="num"><%= x.n %></td></tr><% }) %></tbody></table>
+  </div>
+</div>
+<%- include('_bottom') %>

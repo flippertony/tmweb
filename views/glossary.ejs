@@ -1,0 +1,18 @@
+<%- include('partials/top') %>
+<div class="wrap narrow">
+  <%- include('partials/crumbs') %>
+  <header class="page-head">
+    <h1>Glossario dell'intelligenza artificiale</h1>
+    <p class="lead">I termini di AI, dati e marketing digitale spiegati in una frase, con approfondimenti per chi vuole saperne di più.</p>
+  </header>
+  <nav class="alpha" aria-label="Lettere"><% Object.keys(groups).forEach(function(L){ %><a href="#l-<%= L %>"><%= L %></a><% }) %></nav>
+  <% Object.keys(groups).forEach(function(L){ %>
+  <section class="gloss-group" id="l-<%= L %>">
+    <h2><%= L %></h2>
+    <dl class="gloss-list">
+      <% groups[L].forEach(function(g){ %><div><dt><a href="/glossario/<%= g.slug %>"><%= g.term %></a></dt><dd><%= g.short_def %></dd></div><% }) %>
+    </dl>
+  </section>
+  <% }) %>
+</div>
+<%- include('partials/bottom') %>

@@ -1,0 +1,30 @@
+<%- include('partials/top') %>
+<div class="wrap narrow">
+  <%- include('partials/crumbs') %>
+  <header class="page-head">
+    <p class="eyebrow">Infografica · <%= d.period || 'Dati' %></p>
+    <h1><%= d.title %></h1>
+    <% if (d.insight) { %><p class="answer tldr-inline"><strong>Il dato chiave:</strong> <%= d.insight %></p><% } %>
+    <% if (!d.verified) { %><p class="note-warn">Valori dimostrativi: sostituiscili con i dati della fonte ufficiale dal pannello prima della pubblicazione definitiva.</p><% } %>
+  </header>
+  <figure class="infographic infographic-lg">
+    <%- svg %>
+    <figcaption>Fonte: <% if (d.source_url) { %><a href="<%= d.source_url %>" rel="noopener" target="_blank"><%= d.source_name || d.source_url %></a><% } else { %><%= d.source_name || '—' %><% } %><% if (d.license) { %> · Licenza <%= d.license %><% } %> · Aggiornato <time datetime="<%= d.updated_at %>"><%= h.fmtDate(d.updated_at) %></time></figcaption>
+  </figure>
+  <div class="data-actions">
+    <a class="btn" href="/dati/<%= d.slug %>.csv" download>Scarica CSV</a>
+    <a class="btn" href="/dati/<%= d.slug %>.svg" download>Scarica SVG</a>
+  </div>
+  <details class="table-toggle" open><summary>Tabella dei dati</summary><div class="table-wrap"><%- table %></div></details>
+  <div class="prose"><%- desc %></div>
+  <section class="embed-box" aria-labelledby="emb-h">
+    <h2 id="emb-h">Incorpora questa infografica</h2>
+    <p class="small">Puoi pubblicarla sul tuo sito gratuitamente: copia il codice qui sotto (include il credito alla fonte).</p>
+    <textarea readonly rows="4" class="code" data-select><%= embed %></textarea>
+    <button class="btn btn-sm" type="button" data-copy-from="prev">Copia codice</button>
+  </section>
+  <% if (articles.length) { %>
+  <section class="section"><h2>Articoli con questi dati</h2><div class="grid grid-2"><% articles.forEach(function(a){ %><%- include('partials/card', { a: a, variant: 'compact' }) %><% }) %></div></section>
+  <% } %>
+</div>
+<%- include('partials/bottom') %>

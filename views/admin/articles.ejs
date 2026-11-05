@@ -1,0 +1,35 @@
+<%- include('_top') %>
+<form class="filters" method="get">
+  <input type="search" name="q" value="<%= q %>" placeholder="Cerca titolo o keyword…">
+  <select name="stato">
+    <option value="">Tutti gli stati</option>
+    <option value="published" <%= stato === 'published' ? 'selected' : '' %>>Pubblicati</option>
+    <option value="scheduled" <%= stato === 'scheduled' ? 'selected' : '' %>>Programmati</option>
+    <option value="draft" <%= stato === 'draft' ? 'selected' : '' %>>Bozze</option>
+  </select>
+  <select name="categoria">
+    <option value="">Tutte le categorie</option>
+    <% cats.forEach(function(c){ %><option value="<%= c.id %>" <%= String(categoria) === String(c.id) ? 'selected' : '' %>><%= c.name %></option><% }) %>
+  </select>
+  <button class="btn btn-sm" type="submit">Filtra</button>
+</form>
+<div class="panel">
+<table class="tbl tbl-list">
+  <thead><tr><th>Titolo</th><th>Categoria</th><th>Stato</th><th>Data</th><th class="num">Viste</th><th class="num">Punteggi</th><th></th></tr></thead>
+  <tbody>
+  <% list.forEach(function(a){ const sched = a.status === 'published' && a.published_at > now; %>
+    <tr>
+      <td><a class="strong" href="/admin/articoli/<%= a.id %>"><%= a.title %></a><% if (a.featured) { %> <span class="tag">evidenza</span><% } %><% if (a.sponsored) { %> <span class="tag">sponsor</span><% } %><br><small class="muted"><%= a.author_name || '' %> · <%= a.word_count %> parole<%= a.focus_keyword ? ' · kw: ' + a.focus_keyword : '' %></small></td>
+      <td><%= a.category_name || '—' %></td>
+      <td><span class="status <%= sched ? 'scheduled' : a.status %>"><%= sched ? 'programmato' : a.status === 'published' ? 'pubblicato' : 'bozza' %></span></td>
+      <td class="nowrap"><%= h.fmtDate(a.published_at || a.created_at) %></td>
+      <td class="num"><%= h.compact(a.views) %></td>
+      <td class="num"><%- include('_scores', { a: a }) %></td>
+      <td class="nowrap"><a href="/articoli/<%= a.slug %><%= a.status !== 'published' || sched ? '?anteprima=1' : '' %>" target="_blank" rel="noopener">Vedi ↗</a></td>
+    </tr>
+  <% }) %>
+  <% if (!list.length) { %><tr><td colspan="7" class="muted">Nessun articolo. <a href="/admin/articoli/nuovo">Scrivi il primo →</a></td></tr><% } %>
+  </tbody>
+</table>
+</div>
+<%- include('_bottom') %>

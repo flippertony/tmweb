@@ -1,0 +1,10 @@
+<%- include('partials/top') %>
+<div class="wrap narrow">
+  <%- include('partials/crumbs') %>
+  <article>
+    <header class="page-head"><h1><%= p.title %></h1></header>
+    <div class="prose"><%- body %></div>
+    <p class="small muted">Ultimo aggiornamento: <time datetime="<%= p.updated_at %>"><%= h.fmtDate(p.updated_at) %></time></p>
+  </article>
+</div>
+<%- include('partials/bottom') %>

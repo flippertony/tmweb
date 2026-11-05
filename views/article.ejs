@@ -1,0 +1,147 @@
+<%- include('partials/top') %>
+<% const hasAff = a.tools.length || a.sponsored || body.html.indexOf('/go/') !== -1; const shareUrl = encodeURIComponent(meta.canonical); const shareTitle = encodeURIComponent(a.title); %>
+<% if (preview) { %><div class="preview-bar">Anteprima <%= a.status === 'draft' ? 'bozza' : 'programmata' %> — non visibile al pubblico. <a href="/admin/articoli/<%= a.id %>">Torna all'editor</a></div><% } %>
+<div class="wrap">
+  <%- include('partials/crumbs') %>
+</div>
+<article class="article">
+  <header class="wrap article-head">
+    <div class="article-kicker">
+      <% if (a.category_name) { %><a class="pill" href="/categoria/<%= a.category_slug %>" style="--c:<%= a.category_color %>"><%= a.category_name %></a><% } %>
+      <span class="type-label"><%= { news: 'Notizia', guide: 'Guida', analysis: 'Analisi', review: 'Recensione', list: 'Selezione' }[a.type] %></span>
+      <% if (a.sponsored) { %><span class="badge">Contenuto sponsorizzato</span><% } %>
+    </div>
+    <h1><%= a.title %></h1>
+    <% if (a.excerpt) { %><p class="dek"><%= a.excerpt %></p><% } %>
+    <div class="byline">
+      <% if (a.author) { %>
+        <% if (a.author.avatar) { %><img class="avatar" src="<%= a.author.avatar %>" alt="" width="44" height="44"><% } else { %><span class="avatar avatar-txt" aria-hidden="true"><%= a.author.name.slice(0,1) %></span><% } %>
+        <div>
+          <p class="byline-name">di <a href="/autore/<%= a.author.slug %>" rel="author"><%= a.author.name %></a><% if (a.author.job_title) { %><span class="muted">, <%= a.author.job_title %></span><% } %></p>
+          <p class="byline-dates muted small">
+            Pubblicato <time datetime="<%= a.published_at %>"><%= h.fmtDate(a.published_at, true) %></time>
+            <% if (a.updated_at && a.published_at && a.updated_at.slice(0,10) > a.published_at.slice(0,10)) { %> · <strong>Aggiornato <time datetime="<%= a.updated_at %>"><%= h.fmtDate(a.updated_at) %></time></strong><% } %>
+            · <%= a.reading_time %> min di lettura
+          </p>
+        </div>
+      <% } %>
+    </div>
+  </header>
+
+  <% if (a.cover_image) { %>
+  <figure class="wrap article-cover">
+    <img src="<%= a.cover_image %>" alt="<%= a.cover_alt || '' %>" width="1200" height="630" fetchpriority="high" decoding="async">
+    <% if (a.cover_alt) { %><figcaption class="small muted"><%= a.cover_alt %></figcaption><% } %>
+  </figure>
+  <% } %>
+
+  <div class="wrap article-layout">
+    <div class="article-main">
+      <% if (a.tldr) { %>
+      <section class="tldr" aria-labelledby="tldr-h">
+        <h2 id="tldr-h" class="tldr-label">Risposta rapida</h2>
+        <p><%= a.tldr %></p>
+      </section>
+      <% } %>
+      <% if (a.takeawayList.length) { %>
+      <section class="takeaways" aria-labelledby="kt-h">
+        <h2 id="kt-h">Punti chiave</h2>
+        <ul><% a.takeawayList.forEach(function(t){ %><li><%= t %></li><% }) %></ul>
+      </section>
+      <% } %>
+      <% if (hasAff && s.affiliate_disclosure) { %><p class="disclosure"><span aria-hidden="true">ⓘ</span> <%= s.affiliate_disclosure %></p><% } %>
+
+      <% if (body.toc.length >= 3) { %>
+      <details class="toc toc-mobile"><summary>Indice dei contenuti</summary><ol><% body.toc.forEach(function(t){ %><li class="toc-d<%= t.depth %>"><a href="#<%= t.id %>"><%- t.text %></a></li><% }) %></ol></details>
+      <% } %>
+
+      <div class="prose">
+        <%- body.html %>
+      </div>
+
+      <% if (a.stepList.length) { %>
+      <section class="steps" aria-labelledby="steps-h">
+        <h2 id="steps-h">Procedura passo dopo passo</h2>
+        <ol><% a.stepList.forEach(function(st, i){ %><li id="step-<%= i + 1 %>"><h3><%= st.name %></h3><p><%= st.text %></p></li><% }) %></ol>
+      </section>
+      <% } %>
+
+      <% const picks = a.tools.filter(function(t){ return (a.content_md || '').indexOf('[[tool:' + t.slug + ']]') === -1; }); %>
+      <% if (picks.length) { %>
+      <section class="picks" aria-labelledby="picks-h">
+        <h2 id="picks-h">Strumenti citati nell'articolo</h2>
+        <% picks.forEach(function(t){ %><%- comp.toolBox(t) %><% }) %>
+      </section>
+      <% } %>
+
+      <% if (a.faqList.length) { %>
+      <section class="faq" aria-labelledby="faq-h">
+        <h2 id="faq-h">Domande frequenti</h2>
+        <% a.faqList.forEach(function(f, i){ %>
+        <details <%= i === 0 ? 'open' : '' %>><summary><h3><%= f.q %></h3></summary><p><%= f.a %></p></details>
+        <% }) %>
+      </section>
+      <% } %>
+
+      <% if (a.sourceList.length) { %>
+      <section class="sources" aria-labelledby="src-h">
+        <h2 id="src-h">Fonti e riferimenti</h2>
+        <ol><% a.sourceList.forEach(function(x){ %><li><a href="<%= x.url %>" rel="noopener" target="_blank"><%= x.title || x.url %></a><% if (x.publisher) { %> — <span class="muted"><%= x.publisher %></span><% } %></li><% }) %></ol>
+      </section>
+      <% } %>
+
+      <% if (a.tags.length) { %>
+      <p class="tags"><% a.tags.forEach(function(t){ %><a href="/tag/<%= t.slug %>">#<%= t.name %></a> <% }) %></p>
+      <% } %>
+
+      <div class="share" aria-label="Condividi">
+        <span class="muted small">Condividi:</span>
+        <a class="btn btn-sm" href="https://www.linkedin.com/sharing/share-offsite/?url=<%= shareUrl %>" rel="noopener" target="_blank">LinkedIn</a>
+        <a class="btn btn-sm" href="https://x.com/intent/post?url=<%= shareUrl %>&text=<%= shareTitle %>" rel="noopener" target="_blank">X</a>
+        <a class="btn btn-sm" href="https://wa.me/?text=<%= shareTitle %>%20<%= shareUrl %>" rel="noopener" target="_blank">WhatsApp</a>
+        <a class="btn btn-sm" href="https://t.me/share/url?url=<%= shareUrl %>&text=<%= shareTitle %>" rel="noopener" target="_blank">Telegram</a>
+        <button class="btn btn-sm" type="button" data-copy="<%= meta.canonical %>">Copia link</button>
+      </div>
+
+      <% if (a.author) { %>
+      <section class="author-box" aria-label="Autore">
+        <% if (a.author.avatar) { %><img class="avatar avatar-lg" src="<%= a.author.avatar %>" alt="" width="72" height="72" loading="lazy"><% } else { %><span class="avatar avatar-lg avatar-txt" aria-hidden="true"><%= a.author.name.slice(0,1) %></span><% } %>
+        <div>
+          <p class="author-name"><a href="/autore/<%= a.author.slug %>"><%= a.author.name %></a></p>
+          <% if (a.author.job_title) { %><p class="muted small"><%= a.author.job_title %></p><% } %>
+          <% if (a.author.bio) { %><p><%= a.author.bio %></p><% } %>
+          <% if (a.author.expertise) { %><p class="small">Competenze: <%= a.author.expertise %></p><% } %>
+        </div>
+      </section>
+      <% } %>
+    </div>
+
+    <aside class="article-side">
+      <div class="sticky">
+        <% if (body.toc.length >= 3) { %>
+        <nav class="toc" aria-label="Indice dei contenuti">
+          <p class="toc-title">In questo articolo</p>
+          <ol><% body.toc.forEach(function(t){ %><li class="toc-d<%= t.depth %>"><a href="#<%= t.id %>"><%- t.text %></a></li><% }) %></ol>
+        </nav>
+        <% } %>
+        <% if (a.tools.length) { const t = a.tools[0]; %>
+        <div class="side-cta">
+          <p class="eyebrow">Scelta della redazione</p>
+          <p class="side-cta-name"><%= t.name %></p>
+          <p class="small muted"><%= t.tagline %></p>
+          <a class="btn btn-cta btn-block" href="/go/<%= t.slug %>" rel="sponsored nofollow" target="_blank" data-aff="<%= t.slug %>">Scopri <%= t.name %> →</a>
+        </div>
+        <% } %>
+        <%- comp.adSlot('sidebar') %>
+      </div>
+    </aside>
+  </div>
+</article>
+
+<% if (related.length) { %>
+<section class="wrap section" aria-labelledby="rel-h">
+  <h2 id="rel-h">Leggi anche</h2>
+  <div class="grid grid-4"><% related.forEach(function(r){ %><%- include('partials/card', { a: r, variant: 'small' }) %><% }) %></div>
+</section>
+<% } %>
+<%- include('partials/bottom') %>

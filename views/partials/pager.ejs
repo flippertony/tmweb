@@ -1,0 +1,7 @@
+<% if (pg && pg.pages > 1) { %>
+<nav class="pager" aria-label="Paginazione">
+  <% if (pg.prev) { %><a class="btn" href="<%= pg.prev %>" rel="prev">← Precedenti</a><% } %>
+  <span class="muted">Pagina <%= pg.current %> di <%= pg.pages %></span>
+  <% if (pg.next) { %><a class="btn" href="<%= pg.next %>" rel="next">Successivi →</a><% } %>
+</nav>
+<% } %>

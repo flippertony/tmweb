@@ -1,0 +1,181 @@
+<%- include('_top') %>
+<% const faq = h.parseJson(a.faq, []); const steps = h.parseJson(a.steps, []); const sources = h.parseJson(a.sources, []); %>
+<form method="post" action="/admin/articoli/salva" class="editor" data-editor>
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <input type="hidden" name="id" value="<%= a.id || '' %>">
+  <div class="editor-main">
+    <div class="panel">
+      <label class="lbl-big">Titolo (H1)
+        <input class="input-title" name="title" value="<%= a.title || '' %>" required placeholder="Un titolo chiaro, con la keyword e una promessa" data-f="title">
+      </label>
+      <div class="row-2">
+        <label>Slug URL <span class="hint">/articoli/…</span><input name="slug" value="<%= a.slug || '' %>" placeholder="generato dal titolo" data-f="slug"></label>
+        <label>Tipo di contenuto
+          <select name="type" data-f="type">
+            <% [['news','Notizia (NewsArticle)'],['guide','Guida / How-to'],['analysis','Analisi'],['review','Recensione'],['list','Lista / selezione']].forEach(function(t){ %><option value="<%= t[0] %>" <%= a.type === t[0] ? 'selected' : '' %>><%= t[1] %></option><% }) %>
+          </select>
+        </label>
+      </div>
+      <label>Sommario (sottotitolo, 1-2 frasi) <textarea name="excerpt" rows="2" data-f="excerpt" data-count="160"><%= a.excerpt || '' %></textarea></label>
+      <label class="aeo-field">⚡ Risposta rapida — AEO <span class="hint">40-60 parole: la risposta diretta che Google e gli assistenti AI estraggono. Inizia nominando il soggetto.</span>
+        <textarea name="tldr" rows="3" data-f="tldr" data-words="60"><%= a.tldr || '' %></textarea>
+      </label>
+      <label>Punti chiave <span class="hint">uno per riga, 3-5 punti</span><textarea name="takeaways" rows="4" data-f="takeaways"><%= a.takeaways || '' %></textarea></label>
+    </div>
+
+    <div class="panel">
+      <div class="md-toolbar" role="toolbar" aria-label="Formattazione">
+        <button type="button" data-md="h2" title="Titolo H2">H2</button>
+        <button type="button" data-md="h3" title="Titolo H3">H3</button>
+        <button type="button" data-md="bold" title="Grassetto"><b>B</b></button>
+        <button type="button" data-md="italic" title="Corsivo"><i>I</i></button>
+        <button type="button" data-md="link" title="Link">🔗</button>
+        <button type="button" data-md="ul" title="Elenco">• Lista</button>
+        <button type="button" data-md="ol" title="Elenco numerato">1. Lista</button>
+        <button type="button" data-md="quote" title="Citazione">❝</button>
+        <button type="button" data-md="table" title="Tabella">▦ Tabella</button>
+        <button type="button" data-md="image" title="Immagine dalla libreria">🖼 Immagine</button>
+        <span class="sep"></span>
+        <select data-shortcode aria-label="Inserisci blocco">
+          <option value="">+ Blocco…</option>
+          <optgroup label="Monetizzazione">
+            <% tools.forEach(function(t){ %><option value="[[tool:<%= t.slug %>]]">Box affiliato: <%= t.name %></option><% }) %>
+            <option value="[[ad]]">Annuncio pubblicitario</option>
+            <option value="[[newsletter]]">Box newsletter</option>
+          </optgroup>
+          <optgroup label="Dati">
+            <% datasets.forEach(function(d){ %><option value="[[chart:<%= d.slug %>]]">Grafico: <%= d.title %></option><% }) %>
+          </optgroup>
+          <optgroup label="Modelli AI">
+            <% models.forEach(function(m){ %><option value="[[model:<%= m.slug %>]]">Scheda: <%= m.name %></option><% }) %>
+          </optgroup>
+          <option value="[[callout:Testo in evidenza]]">Box in evidenza</option>
+        </select>
+        <span class="spacer"></span>
+        <button type="button" data-preview-toggle class="toggle">Anteprima</button>
+      </div>
+      <textarea name="content_md" class="md-area" rows="26" data-f="content" placeholder="Scrivi in Markdown. ## per i sottotitoli, - per gli elenchi, [testo](url) per i link."><%= a.content_md || '' %></textarea>
+      <div class="md-preview prose-adm" hidden></div>
+      <p class="hint" data-wordcount></p>
+    </div>
+
+    <div class="panel">
+      <h2>❓ FAQ <span class="hint">genera schema FAQPage · usa domande reali ("Persone che chiedono anche")</span></h2>
+      <div class="repeater" data-repeater="faq">
+        <% faq.forEach(function(f){ %>
+        <div class="rep-row"><input name="faq_q[]" value="<%= f.q %>" placeholder="Domanda"><textarea name="faq_a[]" rows="2" placeholder="Risposta breve (40-80 parole)"><%= f.a %></textarea><button type="button" class="rep-del" aria-label="Rimuovi">✕</button></div>
+        <% }) %>
+      </div>
+      <button type="button" class="btn btn-sm" data-add="faq">+ Aggiungi domanda</button>
+    </div>
+
+    <div class="panel">
+      <h2>🪜 Passaggi How-to <span class="hint">facoltativo · per guide pratiche (schema HowTo)</span></h2>
+      <div class="repeater" data-repeater="step">
+        <% steps.forEach(function(st){ %>
+        <div class="rep-row"><input name="step_name[]" value="<%= st.name %>" placeholder="Nome del passaggio"><textarea name="step_text[]" rows="2" placeholder="Cosa fare"><%= st.text %></textarea><button type="button" class="rep-del" aria-label="Rimuovi">✕</button></div>
+        <% }) %>
+      </div>
+      <button type="button" class="btn btn-sm" data-add="step">+ Aggiungi passaggio</button>
+    </div>
+
+    <div class="panel">
+      <h2>📚 Fonti — GEO <span class="hint">i motori AI preferiscono contenuti che citano fonti primarie verificabili</span></h2>
+      <div class="repeater" data-repeater="src">
+        <% sources.forEach(function(x){ %>
+        <div class="rep-row rep-3"><input name="src_title[]" value="<%= x.title %>" placeholder="Titolo documento"><input name="src_url[]" value="<%= x.url %>" placeholder="https://…" type="url"><input name="src_publisher[]" value="<%= x.publisher %>" placeholder="Editore (ISTAT, OCSE…)"><button type="button" class="rep-del" aria-label="Rimuovi">✕</button></div>
+        <% }) %>
+      </div>
+      <button type="button" class="btn btn-sm" data-add="src">+ Aggiungi fonte</button>
+    </div>
+  </div>
+
+  <aside class="editor-side">
+    <div class="panel sticky-panel">
+      <h2>Pubblicazione</h2>
+      <label>Stato
+        <select name="status">
+          <option value="draft" <%= a.status !== 'published' ? 'selected' : '' %>>Bozza</option>
+          <option value="published" <%= a.status === 'published' ? 'selected' : '' %>><%= user.role === 'author' ? 'Invia in revisione' : 'Pubblicato' %></option>
+        </select>
+      </label>
+      <label>Data di pubblicazione <span class="hint">futura = programmato</span><input type="datetime-local" name="published_at" value="<%= h.toLocalInput(a.published_at) %>"></label>
+      <label class="check"><input type="checkbox" name="featured" <%= a.featured ? 'checked' : '' %>> In evidenza in home</label>
+      <label class="check"><input type="checkbox" name="sponsored" <%= a.sponsored ? 'checked' : '' %>> Contenuto sponsorizzato</label>
+      <% if (a.id) { %><label class="check"><input type="checkbox" name="minor_edit"> Modifica minore (non aggiorna la data)</label><% } %>
+      <div class="btn-row">
+        <button class="btn btn-primary" type="submit">Salva</button>
+        <% if (a.id) { %><a class="btn" href="/articoli/<%= a.slug %>?anteprima=1" target="_blank" rel="noopener">Anteprima ↗</a><% } %>
+      </div>
+
+      <div class="score-panel" data-score-panel>
+        <div class="score-rings">
+          <div class="ring" data-ring="seo"><b>–</b><span>SEO</span></div>
+          <div class="ring" data-ring="aeo"><b>–</b><span>AEO</span></div>
+          <div class="ring" data-ring="geo"><b>–</b><span>GEO</span></div>
+        </div>
+        <details><summary>Suggerimenti di ottimizzazione</summary><ul class="checklist" data-checklist></ul></details>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>Organizzazione</h2>
+      <label>Categoria
+        <select name="category_id"><option value="">— nessuna —</option><% cats.forEach(function(c){ %><option value="<%= c.id %>" <%= a.category_id === c.id ? 'selected' : '' %>><%= c.name %></option><% }) %></select>
+      </label>
+      <% if (user.role !== 'author') { %>
+      <label>Autore
+        <select name="author_id" data-f="author"><% authors.forEach(function(u){ %><option value="<%= u.id %>" data-bio="<%= u.bio ? 1 : 0 %>" <%= a.author_id === u.id ? 'selected' : '' %>><%= u.name %></option><% }) %></select>
+      </label>
+      <% } else { %><input type="hidden" data-f="author" data-bio="<%= user.bio ? 1 : 0 %>"><% } %>
+      <label>Tag <span class="hint">separati da virgola</span><input name="tags" value="<%= tagsStr %>" placeholder="chatgpt, produttività"></label>
+      <fieldset class="tools-pick"><legend>Strumenti affiliati collegati</legend>
+        <% tools.forEach(function(t){ %><label class="check"><input type="checkbox" name="tools[]" value="<%= t.id %>" <%= selectedTools.indexOf(t.id) !== -1 ? 'checked' : '' %>> <%= t.name %></label><% }) %>
+        <% if (!tools.length) { %><p class="hint">Nessuno strumento. <a href="/admin/strumenti/nuovo">Aggiungine uno</a>.</p><% } %>
+      </fieldset>
+    </div>
+
+    <div class="panel">
+      <h2>Immagine di copertina</h2>
+      <div class="cover-prev" data-cover-prev><% if (a.cover_image) { %><img src="<%= a.cover_image %>" alt=""><% } %></div>
+      <label>URL immagine (1200×630) <input name="cover_image" value="<%= a.cover_image || '' %>" data-f="cover" placeholder="/uploads/…"></label>
+      <button type="button" class="btn btn-sm" data-pick-cover>Scegli dalla libreria</button>
+      <label>Testo alternativo <input name="cover_alt" value="<%= a.cover_alt || '' %>" data-f="coverAlt" placeholder="Descrivi l'immagine"></label>
+    </div>
+
+    <div class="panel">
+      <h2>SEO</h2>
+      <label>Keyword principale <input name="focus_keyword" value="<%= a.focus_keyword || '' %>" data-f="kw" placeholder="es. guadagnare con l'AI"></label>
+      <label>Meta title <span class="hint" data-counter-for="meta_title"></span><input name="meta_title" value="<%= a.meta_title || '' %>" data-f="metaTitle" placeholder="se vuoto, usa il titolo"></label>
+      <label>Meta description <span class="hint" data-counter-for="meta_description"></span><textarea name="meta_description" rows="3" data-f="metaDesc" placeholder="110-160 caratteri con beneficio e invito all'azione"><%= a.meta_description || '' %></textarea></label>
+      <div class="serp" aria-label="Anteprima risultato Google">
+        <p class="serp-url"><%= siteUrl.replace(/^https?:\/\//, '') %> › articoli › <span data-serp-slug></span></p>
+        <p class="serp-title" data-serp-title></p>
+        <p class="serp-desc" data-serp-desc></p>
+      </div>
+      <label>URL canonico <span class="hint">solo se il contenuto è ripubblicato da altra fonte</span><input name="canonical_url" value="<%= a.canonical_url || '' %>" type="url"></label>
+      <label class="check"><input type="checkbox" name="noindex" <%= a.noindex ? 'checked' : '' %>> Non indicizzare (noindex)</label>
+    </div>
+
+    <% if (a.id) { %>
+    <div class="panel danger">
+      <button class="btn btn-sm" type="submit" formaction="/admin/articoli/<%= a.id %>/duplica" formnovalidate>Duplica</button>
+      <% if (user.role !== 'author') { %><button class="btn btn-sm btn-danger" type="submit" formaction="/admin/articoli/<%= a.id %>/elimina" formnovalidate data-confirm="Eliminare definitivamente questo articolo?">Elimina</button><% } %>
+    </div>
+    <% } %>
+  </aside>
+</form>
+
+<template id="tpl-faq"><div class="rep-row"><input name="faq_q[]" placeholder="Domanda"><textarea name="faq_a[]" rows="2" placeholder="Risposta breve (40-80 parole)"></textarea><button type="button" class="rep-del" aria-label="Rimuovi">✕</button></div></template>
+<template id="tpl-step"><div class="rep-row"><input name="step_name[]" placeholder="Nome del passaggio"><textarea name="step_text[]" rows="2" placeholder="Cosa fare"></textarea><button type="button" class="rep-del" aria-label="Rimuovi">✕</button></div></template>
+<template id="tpl-src"><div class="rep-row rep-3"><input name="src_title[]" placeholder="Titolo documento"><input name="src_url[]" placeholder="https://…" type="url"><input name="src_publisher[]" placeholder="Editore"><button type="button" class="rep-del" aria-label="Rimuovi">✕</button></div></template>
+
+<dialog class="media-dialog" data-media-dialog>
+  <form method="dialog"><header><h2>Libreria media</h2><button class="btn btn-sm" value="close">Chiudi</button></header></form>
+  <div class="media-upload">
+    <input type="file" accept="image/jpeg,image/png,image/webp,image/gif,image/avif" multiple data-media-file>
+    <span class="hint">JPG, PNG, WebP, AVIF · max 8 MB · consiglio: WebP 1200×630</span>
+  </div>
+  <div class="media-grid" data-media-grid></div>
+</dialog>
+<%- include('_bottom') %>

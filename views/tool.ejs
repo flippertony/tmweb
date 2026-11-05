@@ -1,0 +1,50 @@
+<%- include('partials/top') %>
+<div class="wrap">
+  <%- include('partials/crumbs') %>
+  <div class="detail-layout">
+    <div>
+      <header class="page-head tool-head">
+        <% if (t.logo) { %><img src="<%= t.logo %>" alt="Logo <%= t.name %>" width="72" height="72"><% } else { %><span class="tool-mono tool-mono-lg" aria-hidden="true"><%= t.name.slice(0,1) %></span><% } %>
+        <div>
+          <p class="eyebrow"><%= t.category %></p>
+          <h1><%= t.name %>: recensione e prezzi</h1>
+          <p class="lead"><%= t.tagline %></p>
+          <% if (t.rating) { %><p><%- comp.stars(t.rating) %> <strong><%= Number(t.rating).toLocaleString('it-IT') %>/5</strong> <span class="muted small">· valutazione della redazione</span></p><% } %>
+        </div>
+      </header>
+      <p class="disclosure"><span aria-hidden="true">ⓘ</span> <%= s.affiliate_disclosure %></p>
+      <div class="verdict">
+        <dl class="spec-grid">
+          <div><dt>Prezzo</dt><dd><%= t.pricing || '—' %></dd></div>
+          <div><dt>Piano gratuito</dt><dd><%= t.free_plan ? 'Sì' : 'No' %></dd></div>
+          <div><dt>Categoria</dt><dd><%= t.category || '—' %></dd></div>
+          <% if (t.coupon) { %><div><dt>Codice sconto</dt><dd><code><%= t.coupon %></code></dd></div><% } %>
+        </dl>
+        <a class="btn btn-cta btn-lg" href="/go/<%= t.slug %>" rel="sponsored nofollow" target="_blank" data-aff="<%= t.slug %>">Vai a <%= t.name %> →</a>
+      </div>
+      <% if (pros.length || cons.length) { %>
+      <div class="pros-cons pros-cons-lg">
+        <div><h2>Pro</h2><ul class="pros"><% pros.forEach(function(x){ %><li><%= x %></li><% }) %></ul></div>
+        <div><h2>Contro</h2><ul class="cons"><% cons.forEach(function(x){ %><li><%= x %></li><% }) %></ul></div>
+      </div>
+      <% } %>
+      <div class="prose"><%- desc %></div>
+      <% if (articles.length) { %>
+      <section class="section"><h2>Articoli che citano <%= t.name %></h2><div class="grid grid-2"><% articles.forEach(function(a){ %><%- include('partials/card', { a: a, variant: 'compact' }) %><% }) %></div></section>
+      <% } %>
+      <% if (alternatives.length) { %>
+      <section class="section"><h2>Alternative a <%= t.name %></h2><% alternatives.forEach(function(x){ %><%- comp.toolBox(x, { compact: true }) %><% }) %></section>
+      <% } %>
+      <p class="small muted">Ultimo aggiornamento: <time datetime="<%= t.updated_at %>"><%= h.fmtDate(t.updated_at) %></time></p>
+    </div>
+    <aside class="article-side"><div class="sticky">
+      <div class="side-cta">
+        <p class="side-cta-name"><%= t.name %></p>
+        <p class="small muted"><%= t.pricing %></p>
+        <a class="btn btn-cta btn-block" href="/go/<%= t.slug %>" rel="sponsored nofollow" target="_blank" data-aff="<%= t.slug %>">Prova <%= t.name %> →</a>
+      </div>
+      <%- comp.adSlot('sidebar') %>
+    </div></aside>
+  </div>
+</div>
+<%- include('partials/bottom') %>

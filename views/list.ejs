@@ -1,0 +1,22 @@
+<%- include('partials/top') %>
+<div class="wrap">
+  <%- include('partials/crumbs') %>
+  <header class="page-head"<% if (locals.category) { %> style="--c:<%= category.color %>"<% } %>>
+    <h1><%= heading %></h1>
+    <% if (intro) { %><p class="lead"><%= intro %></p><% } %>
+  </header>
+  <% if (items.length) { %>
+  <div class="grid grid-3">
+    <% items.forEach(function(a){ %><%- include('partials/card', { a: a }) %><% }) %>
+  </div>
+  <% } else { %>
+  <p class="empty">Ancora nessun articolo in questa sezione.</p>
+  <% } %>
+  <%- include('partials/pager') %>
+  <% if (locals.datasets && datasets.length) { %>
+  <section class="section"><h2>Dati collegati</h2><div class="grid grid-2">
+    <% datasets.forEach(function(d){ %><figure class="infographic"><%- d.svg %><figcaption><a href="/dati/<%= d.slug %>"><%= d.title %> →</a></figcaption></figure><% }) %>
+  </div></section>
+  <% } %>
+</div>
+<%- include('partials/bottom') %>

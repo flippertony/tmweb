@@ -1,0 +1,24 @@
+<%- include('_top') %>
+<form method="post" action="/admin/utenti/salva" class="entity-form">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <input type="hidden" name="id" value="<%= u.id || '' %>">
+  <div class="panel form-grid">
+    <label>Nome e cognome <input name="name" value="<%= u.name || '' %>" required></label>
+    <label>Email <input type="email" name="email" value="<%= u.email || '' %>" required></label>
+    <label>Slug pagina autore <input name="slug" value="<%= u.slug || '' %>"></label>
+    <label>Qualifica <input name="job_title" value="<%= u.job_title || '' %>" placeholder="es. Data journalist, Esperto AI"></label>
+    <% if (user.role === 'admin' && !isSelf) { %>
+    <label>Ruolo <select name="role"><% ['author','editor','admin'].forEach(function(r){ %><option <%= u.role === r ? 'selected' : '' %>><%= r %></option><% }) %></select></label>
+    <% } %>
+    <label>Foto (URL) <input name="avatar" value="<%= u.avatar || '' %>" placeholder="/uploads/…"></label>
+    <label class="span-2">Biografia <span class="hint">esperienza concreta, risultati, formazione (E-E-A-T)</span><textarea name="bio" rows="4"><%= u.bio || '' %></textarea></label>
+    <label class="span-2">Competenze <span class="hint">separate da virgola: diventano "knowsAbout" nello schema Person</span><input name="expertise" value="<%= u.expertise || '' %>" placeholder="Intelligenza artificiale, SEO, Finanza personale"></label>
+    <label class="span-2">Profili esterni <span class="hint">uno per riga: LinkedIn, X, sito personale, Google Scholar…</span><textarea name="same_as" rows="3"><%= u.same_as || '' %></textarea></label>
+    <label><%= u.id ? 'Nuova password (lascia vuoto per non cambiarla)' : 'Password (min. 10 caratteri)' %> <input type="password" name="password" autocomplete="new-password" <%= u.id ? '' : 'required minlength=10' %>></label>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-primary" type="submit">Salva</button>
+    <% if (u.id && user.role === 'admin' && !isSelf) { %><button class="btn btn-danger" type="submit" formaction="/admin/utenti/<%= u.id %>/elimina" formnovalidate data-confirm="Eliminare l'utente? I suoi articoli resteranno senza autore.">Elimina</button><% } %>
+  </div>
+</form>
+<%- include('_bottom') %>

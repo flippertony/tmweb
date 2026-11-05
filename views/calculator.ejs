@@ -1,0 +1,50 @@
+<%- include('partials/top') %>
+<div class="wrap">
+  <%- include('partials/crumbs') %>
+  <header class="page-head">
+    <h1>Calcolatore costi API AI</h1>
+    <p class="lead">Stima quanto spendi ogni mese con le API dei modelli di intelligenza artificiale e trova l'opzione più conveniente per il tuo progetto.</p>
+    <p class="answer"><strong>Come si calcola:</strong> costo mensile = richieste al mese × (token di input × prezzo input + token di output × prezzo output) ÷ 1.000.000. Un token corrisponde in media a circa ¾ di parola in italiano.</p>
+  </header>
+
+  <form class="calc" data-calc onsubmit="return false">
+    <div class="calc-inputs">
+      <label>Richieste al giorno <input type="number" name="rpd" value="1000" min="0" step="1" inputmode="numeric"></label>
+      <label>Token di input per richiesta <input type="number" name="tin" value="800" min="0" step="1" inputmode="numeric"></label>
+      <label>Token di output per richiesta <input type="number" name="tout" value="400" min="0" step="1" inputmode="numeric"></label>
+      <label>Cambio USD → EUR <input type="number" name="fx" value="0.92" min="0" step="0.01" inputmode="decimal"></label>
+    </div>
+    <div class="presets small">
+      Scenari tipici:
+      <button class="chip" type="button" data-preset="300,1500,300">Chatbot assistenza</button>
+      <button class="chip" type="button" data-preset="50,3000,2000">Scrittura articoli</button>
+      <button class="chip" type="button" data-preset="5000,400,50">Classificazione email</button>
+      <button class="chip" type="button" data-preset="200,20000,800">Analisi documenti (RAG)</button>
+    </div>
+  </form>
+
+  <div class="table-wrap">
+    <table class="rank-table" data-calc-table>
+      <caption class="sr-only">Costo mensile stimato per modello</caption>
+      <thead><tr><th scope="col">Modello</th><th scope="col">Provider</th><th scope="col">Costo / richiesta</th><th scope="col">Costo mensile (USD)</th><th scope="col">Costo mensile (EUR)</th><th scope="col"><span class="sr-only">Barra</span></th></tr></thead>
+      <tbody>
+      <% list.forEach(function(m){ %>
+        <tr data-in="<%= m.input_price %>" data-out="<%= m.output_price %>">
+          <th scope="row"><a href="/modelli-ai/<%= m.slug %>"><%= m.name %></a></th><td><%= m.provider %></td>
+          <td data-cell="req">—</td><td data-cell="usd">—</td><td data-cell="eur"><b>—</b></td>
+          <td class="bar-cell"><span class="meter" aria-hidden="true"><span data-cell="bar" style="width:0"></span></span></td>
+        </tr>
+      <% }) %>
+      </tbody>
+    </table>
+  </div>
+  <p class="small muted">Stima su 30 giorni con prezzi di listino standard (senza sconti batch o caching). I prezzi possono cambiare: verifica sulle pagine ufficiali dei provider.</p>
+
+  <section class="faq section" aria-labelledby="calc-faq">
+    <h2 id="calc-faq">Domande frequenti sui costi delle API AI</h2>
+    <details open><summary><h3>Cos'è un token?</h3></summary><p>Un token è un frammento di testo usato dai modelli linguistici: in media 1.000 token corrispondono a circa 750 parole. Si pagano sia i token inviati (input) sia quelli generati (output).</p></details>
+    <details><summary><h3>Perché l'output costa più dell'input?</h3></summary><p>Generare testo richiede più calcolo che leggerlo: per questo quasi tutti i provider applicano un prezzo per token di output da 2 a 5 volte superiore a quello di input.</p></details>
+    <details><summary><h3>Come posso ridurre la spesa?</h3></summary><p>Accorcia i prompt, usa il caching dei prompt ripetuti, scegli un modello più piccolo per i compiti semplici e sposta i lavori non urgenti sulle API batch, spesso scontate fino al 50%.</p></details>
+  </section>
+</div>
+<%- include('partials/bottom') %>

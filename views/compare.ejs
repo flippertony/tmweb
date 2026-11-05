@@ -1,0 +1,41 @@
+<%- include('partials/top') %>
+<div class="wrap">
+  <%- include('partials/crumbs') %>
+  <header class="page-head">
+    <h1><%= chosen.length ? chosen.map(function(m){ return m.name }).join(' vs ') : 'Confronta modelli AI' %></h1>
+    <p class="lead">Confronto affiancato di prezzi, contesto, modalità e valutazioni editoriali.</p>
+  </header>
+  <form class="compare-picker" action="/modelli-ai/confronto" method="get" data-compare>
+    <fieldset>
+      <legend>Cambia selezione (2-4 modelli)</legend>
+      <div class="chips"><% all.forEach(function(m){ %><label class="chip chip-check"><input type="checkbox" value="<%= m.slug %>" <%= chosen.some(function(c){ return c.id === m.id }) ? 'checked' : '' %>> <%= m.name %></label><% }) %></div>
+      <input type="hidden" name="m">
+      <button class="btn btn-primary btn-sm" type="submit">Aggiorna confronto</button>
+    </fieldset>
+  </form>
+  <% if (chosen.length) {
+    const rows = [
+      ['Provider', function(m){ return m.provider }],
+      ['Tipo', function(m){ return m.model_type }],
+      ['Rilascio', function(m){ return m.release_date ? h.fmtDate(m.release_date) : '—' }],
+      ['Finestra di contesto', function(m){ return m.context_window ? h.fmtNumber(m.context_window) + ' token' : '—' }],
+      ['Prezzo input (1M token)', function(m){ return m.input_price != null ? '$' + h.fmtNumber(m.input_price, 3) : '—' }],
+      ['Prezzo output (1M token)', function(m){ return m.output_price != null ? '$' + h.fmtNumber(m.output_price, 3) : '—' }],
+      ['Pesi aperti', function(m){ return m.open_weights ? 'Sì' : 'No' }],
+      ['Modalità', function(m){ return m.modalities || '—' }],
+      ['Ideale per', function(m){ return m.best_for || '—' }],
+      ['Ragionamento', function(m){ return m.score_reasoning + '/100' }],
+      ['Coding', function(m){ return m.score_coding + '/100' }],
+      ['Velocità', function(m){ return m.score_speed + '/100' }],
+      ['Qualità/prezzo', function(m){ return m.score_value + '/100' }],
+    ]; %>
+  <div class="table-wrap">
+    <table class="compare-table">
+      <thead><tr><th scope="col">Caratteristica</th><% chosen.forEach(function(m){ %><th scope="col"><a href="/modelli-ai/<%= m.slug %>"><%= m.name %></a></th><% }) %></tr></thead>
+      <tbody><% rows.forEach(function(r){ %><tr><th scope="row"><%= r[0] %></th><% chosen.forEach(function(m){ %><td><%= r[1](m) %></td><% }) %></tr><% }) %></tbody>
+    </table>
+  </div>
+  <% } %>
+  <p><a class="btn" href="/modelli-ai/calcolatore-costi">Calcola quanto spenderesti con ciascuno →</a></p>
+</div>
+<%- include('partials/bottom') %>

@@ -1,0 +1,52 @@
+<%- include('partials/top') %>
+<div class="wrap">
+  <%- include('partials/crumbs') %>
+  <div class="detail-layout">
+    <div>
+      <header class="page-head">
+        <p class="eyebrow"><%= m.provider %> · <%= m.model_type %></p>
+        <h1><%= m.name %></h1>
+        <% if (m.best_for) { %><p class="answer"><strong>Ideale per:</strong> <%= m.best_for %></p><% } %>
+        <% if (m.verified) { %><p class="small verified">✓ Dati verificati dalla redazione<% if (m.checked_at) { %> il <%= h.fmtDate(m.checked_at) %><% } %></p><% } else { %><p class="note-warn">Dati dimostrativi in attesa di verifica redazionale: controlla il listino ufficiale.</p><% } %>
+      </header>
+      <dl class="spec-grid spec-grid-lg">
+        <div><dt>Finestra di contesto</dt><dd><%= m.context_window ? h.fmtNumber(m.context_window) + ' token' : '—' %></dd></div>
+        <div><dt>Input / 1M token</dt><dd><%= m.input_price != null ? '$' + h.fmtNumber(m.input_price, 3) : '—' %></dd></div>
+        <div><dt>Output / 1M token</dt><dd><%= m.output_price != null ? '$' + h.fmtNumber(m.output_price, 3) : '—' %></dd></div>
+        <div><dt>Pesi aperti</dt><dd><%= m.open_weights ? 'Sì' : 'No' %></dd></div>
+        <div><dt>Modalità</dt><dd><%= m.modalities || '—' %></dd></div>
+        <div><dt>Rilascio</dt><dd><%= m.release_date ? h.fmtDate(m.release_date) : '—' %></dd></div>
+      </dl>
+      <section class="scores" aria-labelledby="sc-h">
+        <h2 id="sc-h">Valutazione della redazione</h2>
+        <% [['Ragionamento', m.score_reasoning], ['Coding', m.score_coding], ['Velocità', m.score_speed], ['Qualità/prezzo', m.score_value]].forEach(function(x){ %>
+        <div class="score-row"><span><%= x[0] %></span><span class="meter" role="img" aria-label="<%= x[1] %> su 100"><span style="width:<%= x[1] %>%"></span></span><b><%= x[1] %></b></div>
+        <% }) %>
+      </section>
+      <div class="prose"><%- desc %></div>
+      <% if (strengths.length || weaknesses.length) { %>
+      <div class="pros-cons pros-cons-lg">
+        <div><h2>Punti di forza</h2><ul class="pros"><% strengths.forEach(function(x){ %><li><%= x %></li><% }) %></ul></div>
+        <div><h2>Limiti</h2><ul class="cons"><% weaknesses.forEach(function(x){ %><li><%= x %></li><% }) %></ul></div>
+      </div>
+      <% } %>
+      <section class="faq" aria-labelledby="faq-h">
+        <h2 id="faq-h">Domande frequenti su <%= m.name %></h2>
+        <% faq.forEach(function(f, i){ %><details <%= i === 0 ? 'open' : '' %>><summary><h3><%= f.q %></h3></summary><p><%= f.a %></p></details><% }) %>
+      </section>
+      <% if (news.length) { %>
+      <section class="section"><h2>Ultime notizie su <%= m.name %></h2><div class="grid grid-2"><% news.forEach(function(a){ %><%- include('partials/card', { a: a, variant: 'compact' }) %><% }) %></div></section>
+      <% } %>
+    </div>
+    <aside class="article-side"><div class="sticky">
+      <% if (tool) { %><%- comp.toolBox(tool, { compact: true }) %><% } else if (m.website) { %><a class="btn btn-primary btn-block" href="<%= m.website %>" rel="noopener" target="_blank">Sito ufficiale</a><% } %>
+      <div class="side-box">
+        <p class="toc-title">Confronta con</p>
+        <ul class="plain"><% others.forEach(function(o){ %><li><a href="/modelli-ai/confronto?m=<%= m.slug %>,<%= o.slug %>"><%= m.name %> vs <%= o.name %></a></li><% }) %></ul>
+        <a class="btn btn-sm" href="/modelli-ai/calcolatore-costi">Calcola i costi →</a>
+      </div>
+      <%- comp.adSlot('sidebar') %>
+    </div></aside>
+  </div>
+</div>
+<%- include('partials/bottom') %>

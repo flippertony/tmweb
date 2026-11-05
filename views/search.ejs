@@ -1,0 +1,16 @@
+<%- include('partials/top') %>
+<div class="wrap">
+  <header class="page-head">
+    <h1><%= q ? 'Risultati per “' + q + '”' : 'Cerca nel sito' %></h1>
+    <form class="search-big" action="/cerca" method="get" role="search">
+      <label class="sr-only" for="q-big">Cosa stai cercando?</label>
+      <input id="q-big" type="search" name="q" value="<%= q %>" placeholder="Es. GEO, Claude, guadagnare con l'AI…" autofocus>
+      <button class="btn btn-primary" type="submit">Cerca</button>
+    </form>
+  </header>
+  <% if (terms.length) { %><div class="grid grid-3"><% terms.forEach(function(g){ %><a class="term-hit" href="/glossario/<%= g.slug %>"><strong><%= g.term %></strong><span><%= g.short_def %></span></a><% }) %></div><% } %>
+  <% if (toolHits.length) { %><div class="grid grid-3"><% toolHits.forEach(function(t){ %><%- comp.toolBox(t, { compact: true }) %><% }) %></div><% } %>
+  <% if (q && !items.length) { %><p class="empty">Nessun articolo trovato. Prova con un termine più generico.</p><% } %>
+  <div class="grid grid-3"><% items.forEach(function(a){ %><%- include('partials/card', { a: a }) %><% }) %></div>
+</div>
+<%- include('partials/bottom') %>

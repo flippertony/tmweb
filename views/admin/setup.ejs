@@ -1,0 +1,15 @@
+<%- include('_auth') %>
+<main class="auth-card">
+  <p class="adm-logo"><span class="adm-logo-mark">TM</span> Configurazione iniziale</p>
+  <h1>Crea l'account amministratore</h1>
+  <p class="muted">Questo passaggio compare una sola volta. Il primo utente avrà tutti i permessi.</p>
+  <% if (error) { %><div class="flash err" role="alert"><%= error %></div><% } %>
+  <form method="post" action="/admin/setup" class="form">
+    <label>Nome del sito <input name="site_name" value="<%= s.site_name %>"></label>
+    <label>Il tuo nome (comparirà come autore) <input name="name" required autocomplete="name"></label>
+    <label>Email <input type="email" name="email" required autocomplete="username"></label>
+    <label>Password (min. 10 caratteri) <input type="password" name="password" required minlength="10" autocomplete="new-password"></label>
+    <button class="btn btn-primary btn-block" type="submit">Crea e accedi</button>
+  </form>
+</main>
+</body></html>

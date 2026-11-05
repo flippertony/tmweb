@@ -1,0 +1,3 @@
+<nav class="crumbs" aria-label="Percorso">
+  <ol><% crumbs.forEach(function(c, i){ %><li><% if (i < crumbs.length - 1) { %><a href="<%= c.url %>"><%= c.name %></a><% } else { %><span aria-current="page"><%= h.truncate(c.name, 60) %></span><% } %></li><% }) %></ol>
+</nav>

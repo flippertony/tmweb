@@ -1,0 +1,17 @@
+<%- include('partials/top') %>
+<div class="wrap">
+  <%- include('partials/crumbs') %>
+  <header class="page-head">
+    <h1><%= cat ? 'Migliori strumenti: ' + cat : 'Strumenti consigliati' %></h1>
+    <p class="lead">Software AI, piattaforme per creator e servizi per lavorare e guadagnare online, selezionati e valutati dalla redazione.</p>
+  </header>
+  <nav class="chips" aria-label="Filtra per categoria">
+    <a class="chip<%= !cat ? ' chip-on' : '' %>" href="/strumenti">Tutti</a>
+    <% cats.forEach(function(c){ %><a class="chip<%= cat === c.category ? ' chip-on' : '' %>" href="/strumenti?categoria=<%= encodeURIComponent(c.category) %>"><%= c.category %> <span class="muted">(<%= c.n %>)</span></a><% }) %>
+  </nav>
+  <p class="disclosure"><span aria-hidden="true">ⓘ</span> <%= s.affiliate_disclosure %></p>
+  <div class="grid grid-2">
+    <% list.forEach(function(t){ %><%- comp.toolBox(t) %><% }) %>
+  </div>
+</div>
+<%- include('partials/bottom') %>

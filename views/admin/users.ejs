@@ -1,0 +1,15 @@
+<%- include('_top') %>
+<div class="list-head">
+  <p class="help">Ruoli: <strong>admin</strong> (tutto), <strong>editor</strong> (contenuti, pubblicazione), <strong>author</strong> (scrive bozze, invia in revisione). Completa bio e competenze: la pagina autore è un segnale E-E-A-T per Google e per i motori AI.</p>
+  <a class="btn btn-primary" href="/admin/utenti/nuovo">+ Nuovo utente</a>
+</div>
+<div class="panel">
+<table class="tbl tbl-list"><thead><tr><th>Nome</th><th>Email</th><th>Ruolo</th><th class="num">Articoli</th><th>Profilo E-E-A-T</th><th></th></tr></thead><tbody>
+  <% list.forEach(function(u){ const complete = u.bio && u.job_title && u.expertise; %>
+  <tr><td><a class="strong" href="/admin/utenti/<%= u.id %>"><%= u.name %></a></td><td><%= u.email %></td><td><%= u.role %></td><td class="num"><%= u.n %></td>
+  <td><span class="status <%= complete ? 'published' : 'draft' %>"><%= complete ? 'completo' : 'da completare' %></span></td>
+  <td><a href="/autore/<%= u.slug %>" target="_blank" rel="noopener">Vedi ↗</a></td></tr>
+  <% }) %>
+</tbody></table>
+</div>
+<%- include('_bottom') %>

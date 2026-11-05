@@ -1,0 +1,24 @@
+<%- include('_top') %>
+<div class="list-head">
+  <% if (E.help) { %><p class="help"><%= E.help %></p><% } %>
+  <a class="btn btn-primary" href="/admin/<%= key %>/nuovo">+ Nuovo <%= E.singular %></a>
+</div>
+<div class="panel">
+<table class="tbl tbl-list">
+  <thead><tr><% E.columns.forEach(function(c){ %><th><%= c[1] %></th><% }) %><th></th></tr></thead>
+  <tbody>
+  <% rows.forEach(function(r){ %>
+    <tr>
+      <% E.columns.forEach(function(c, i){ let v = r[c[0]];
+        if (c[0] === 'status') v = v === 'published' ? 'pubblicato' : 'bozza';
+        if (['verified','in_footer'].indexOf(c[0]) !== -1) v = v ? '✓' : '—'; %>
+        <td><% if (i === 0) { %><a class="strong" href="/admin/<%= key %>/<%= r.id %>"><%= v %></a><% } else { %><%= h.truncate(v == null ? '—' : String(v), 80) %><% } %></td>
+      <% }) %>
+      <td class="nowrap"><% if (E.publicPath) { %><a href="<%= E.publicPath(r) %>" target="_blank" rel="noopener">Vedi ↗</a><% } %></td>
+    </tr>
+  <% }) %>
+  <% if (!rows.length) { %><tr><td colspan="<%= E.columns.length + 1 %>" class="muted">Ancora nessun elemento.</td></tr><% } %>
+  </tbody>
+</table>
+</div>
+<%- include('_bottom') %>

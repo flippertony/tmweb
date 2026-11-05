@@ -1,0 +1,13 @@
+<%- include('partials/top') %>
+<div class="wrap narrow center-block">
+  <p class="big-code">404</p>
+  <h1>Questa pagina non esiste (più)</h1>
+  <p class="lead">Forse è stata spostata o l'indirizzo contiene un errore. Prova a cercarla:</p>
+  <form class="search-big" action="/cerca" method="get" role="search">
+    <label class="sr-only" for="q-404">Cerca</label>
+    <input id="q-404" type="search" name="q" placeholder="Cerca nel sito…">
+    <button class="btn btn-primary" type="submit">Cerca</button>
+  </form>
+  <p><a href="/">← Torna alla home</a></p>
+</div>
+<%- include('partials/bottom') %>

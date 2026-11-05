@@ -1,0 +1,18 @@
+<%- include('partials/top') %>
+<div class="wrap narrow">
+  <%- include('partials/crumbs') %>
+  <article>
+    <header class="page-head">
+      <p class="eyebrow">Glossario AI</p>
+      <h1><%= g.term %>: cos'è e cosa significa</h1>
+    </header>
+    <section class="tldr" aria-labelledby="def-h"><h2 id="def-h" class="tldr-label">Definizione</h2><p><%= g.short_def %></p></section>
+    <div class="prose"><%- body %></div>
+    <p class="small muted">Aggiornato il <time datetime="<%= g.updated_at %>"><%= h.fmtDate(g.updated_at) %></time></p>
+  </article>
+  <% if (articles.length) { %>
+  <section class="section"><h2>Approfondimenti su <%= g.term %></h2><div class="grid grid-2"><% articles.forEach(function(a){ %><%- include('partials/card', { a: a, variant: 'compact' }) %><% }) %></div></section>
+  <% } %>
+  <section class="section"><h2>Altri termini</h2><p class="chips"><% others.forEach(function(o){ %><a class="chip" href="/glossario/<%= o.slug %>"><%= o.term %></a><% }) %></p></section>
+</div>
+<%- include('partials/bottom') %>

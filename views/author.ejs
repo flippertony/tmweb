@@ -1,0 +1,18 @@
+<%- include('partials/top') %>
+<div class="wrap">
+  <%- include('partials/crumbs') %>
+  <header class="author-hero">
+    <% if (u.avatar) { %><img class="avatar avatar-xl" src="<%= u.avatar %>" alt="<%= u.name %>" width="112" height="112"><% } else { %><span class="avatar avatar-xl avatar-txt" aria-hidden="true"><%= u.name.slice(0,1) %></span><% } %>
+    <div>
+      <h1><%= u.name %></h1>
+      <% if (u.job_title) { %><p class="lead"><%= u.job_title %></p><% } %>
+      <% if (u.bio) { %><p><%= u.bio %></p><% } %>
+      <% if (u.expertise) { %><p class="chips"><% u.expertise.split(',').forEach(function(e){ if (e.trim()) { %><span class="chip"><%= e.trim() %></span><% } }) %></p><% } %>
+      <% if (links.length) { %><p class="small"><% links.forEach(function(l){ %><a href="<%= l %>" rel="me noopener" target="_blank"><%= l.replace(/^https?:\/\/(www\.)?/, '').split('/')[0] %></a> · <% }) %></p><% } %>
+      <p class="muted small"><%= total %> articoli pubblicati</p>
+    </div>
+  </header>
+  <div class="grid grid-3"><% items.forEach(function(a){ %><%- include('partials/card', { a: a }) %><% }) %></div>
+  <%- include('partials/pager') %>
+</div>
+<%- include('partials/bottom') %>

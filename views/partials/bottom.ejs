@@ -1,0 +1,49 @@
+</main>
+<div class="wrap" id="newsletter"><%- comp.newsletterBox('footer') %></div>
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <div>
+      <p class="footer-brand"><%= s.site_name %></p>
+      <p class="muted"><%= s.site_tagline %></p>
+      <p class="muted small">Contenuti verificati con fonti citate e data di aggiornamento. <a href="/p/metodologia-editoriale">Come lavoriamo</a>.</p>
+    </div>
+    <div>
+      <p class="footer-title">Esplora</p>
+      <ul>
+        <li><a href="/articoli">Ultimi articoli</a></li>
+        <li><a href="/modelli-ai">Confronto modelli AI</a></li>
+        <li><a href="/modelli-ai/calcolatore-costi">Calcolatore costi API</a></li>
+        <li><a href="/dati">Dati e infografiche</a></li>
+        <li><a href="/strumenti">Strumenti consigliati</a></li>
+        <li><a href="/glossario">Glossario AI</a></li>
+      </ul>
+    </div>
+    <div>
+      <p class="footer-title">Sezioni</p>
+      <ul><% navCats.forEach(function(c){ %><li><a href="/categoria/<%= c.slug %>"><%= c.name %></a></li><% }) %></ul>
+    </div>
+    <div>
+      <p class="footer-title">Informazioni</p>
+      <ul>
+        <% footerPages.forEach(function(p){ %><li><a href="/p/<%= p.slug %>"><%= p.title %></a></li><% }) %>
+        <li><a href="/feed.xml">Feed RSS</a></li>
+        <li><a href="/llms.txt">llms.txt</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="wrap footer-bottom small muted">
+    <span>© <%= new Date().getFullYear() %> <%= s.organization_name || s.site_name %>. Tutti i diritti riservati.</span>
+    <span><%= s.affiliate_disclosure ? 'Il sito partecipa a programmi di affiliazione.' : '' %> <a href="/p/disclosure-affiliazioni">Dettagli</a></span>
+  </div>
+</footer>
+<% if (s.ga4_id) { %>
+<div class="consent" data-consent hidden>
+  <p>Usiamo cookie di analisi (Google Analytics) solo con il tuo consenso. <a href="/p/privacy">Privacy</a></p>
+  <div><button class="btn btn-sm" data-consent-no type="button">Rifiuta</button> <button class="btn btn-primary btn-sm" data-consent-yes type="button">Accetta</button></div>
+</div>
+<script>window.TM_GA4=<%- JSON.stringify(s.ga4_id) %>;</script>
+<% } %>
+<script src="/js/site.js?v=<%= assetV %>" defer></script>
+<%- s.body_end_code || '' %>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<meta name="csrf" content="<%= csrf %>">
+<title><%= title %> · CMS <%= s.site_name %></title>
+<link rel="icon" href="/img/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/css/admin.css?v=<%= assetV %>">
+</head>
+<body class="adm">
+<% const nav = [
+  ['/admin', 'Dashboard', '◧'],
+  ['/admin/articoli', 'Articoli', '✎'],
+  ['/admin/seo', 'SEO · GEO · AEO', '◎'],
+  ['/admin/strumenti', 'Affiliazioni', '€'],
+  ['/admin/modelli', 'Modelli AI', '◈'],
+  ['/admin/dati', 'Dati & infografiche', '▥'],
+  ['/admin/glossario', 'Glossario', 'Aa'],
+  ['/admin/categorie', 'Categorie', '▤'],
+  ['/admin/pagine', 'Pagine', '▢'],
+  ['/admin/media', 'Media', '▣'],
+  ['/admin/iscritti', 'Newsletter', '✉'],
+  ['/admin/redirect', 'Redirect 301', '↪'],
+  ['/admin/utenti', 'Utenti', '☺'],
+  ['/admin/impostazioni', 'Impostazioni', '⚙'],
+]; %>
+<input type="checkbox" id="nav-toggle" class="nav-toggle" hidden>
+<aside class="adm-side">
+  <a class="adm-logo" href="/admin"><span class="adm-logo-mark">TM</span> <%= s.site_name %> <small>CMS</small></a>
+  <nav aria-label="Pannello">
+    <% nav.forEach(function(n){ const on = n[0] === '/admin' ? (path === '/' ) : ('/admin' + path).startsWith(n[0]); %>
+    <a href="<%= n[0] %>" class="<%= on ? 'on' : '' %>"><span class="ico" aria-hidden="true"><%= n[2] %></span><%= n[1] %></a>
+    <% }) %>
+  </nav>
+  <div class="adm-side-foot">
+    <a href="/" target="_blank" rel="noopener">↗ Vedi il sito</a>
+    <a href="/admin/utenti/profilo"><%= user.name %> <small>(<%= user.role %>)</small></a>
+    <form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="linklike" type="submit">Esci</button></form>
+  </div>
+</aside>
+<div class="adm-main">
+  <header class="adm-top">
+    <label for="nav-toggle" class="burger" aria-label="Menu">☰</label>
+    <h1><%= title %></h1>
+    <div class="adm-top-actions"><a class="btn btn-primary btn-sm" href="/admin/articoli/nuovo">+ Nuovo articolo</a></div>
+  </header>
+  <% if (flash) { %><div class="flash ok" role="status"><%= flash %></div><% } %>
+  <% if (flashErr) { %><div class="flash err" role="alert"><%= flashErr %></div><% } %>
+  <div class="adm-content">

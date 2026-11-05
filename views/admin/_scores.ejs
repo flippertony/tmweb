@@ -1,0 +1,1 @@
+<span class="scores-mini"><% [['SEO', a.seo_score], ['AEO', a.aeo_score], ['GEO', a.geo_score]].forEach(function(x){ const v = x[1] || 0; %><span class="sc <%= v >= 80 ? 'good' : v >= 55 ? 'mid' : 'bad' %>" title="<%= x[0] %> <%= v %>/100"><%= x[0][0] %><%= v %></span><% }) %></span>

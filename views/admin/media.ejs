@@ -1,0 +1,22 @@
+<%- include('_top') %>
+<form class="panel upload-form" method="post" action="/admin/media/upload" enctype="multipart/form-data">
+  <input type="hidden" name="_csrf" value="<%= csrf %>">
+  <label>Carica immagini <input type="file" name="files" multiple accept="image/jpeg,image/png,image/webp,image/gif,image/avif" required></label>
+  <label>Testo alternativo (facoltativo) <input name="alt" placeholder="Descrizione per accessibilità e SEO"></label>
+  <button class="btn btn-primary" type="submit">Carica</button>
+  <p class="hint">Consiglio: usa WebP o AVIF, 1200×630 per le copertine (formato ideale per Google Discover e social), peso sotto 200 KB.</p>
+</form>
+<div class="media-grid media-grid-lg">
+  <% list.forEach(function(m){ %>
+  <figure class="media-item">
+    <img src="/uploads/<%= m.filename %>" alt="<%= m.alt || '' %>" loading="lazy">
+    <figcaption>
+      <input readonly value="/uploads/<%= m.filename %>" class="mono small" onfocus="this.select()">
+      <form method="post" action="/admin/media/<%= m.id %>/alt" class="inline-form"><input type="hidden" name="_csrf" value="<%= csrf %>"><input name="alt" value="<%= m.alt || '' %>" placeholder="alt text"><button class="btn btn-sm" type="submit">OK</button></form>
+      <form method="post" action="/admin/media/<%= m.id %>/elimina"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="linklike danger-link" type="submit" data-confirm="Eliminare il file?">Elimina</button> <span class="hint"><%= Math.round(m.size / 1024) %> KB</span></form>
+    </figcaption>
+  </figure>
+  <% }) %>
+  <% if (!list.length) { %><p class="muted">Nessun file caricato.</p><% } %>
+</div>
+<%- include('_bottom') %>

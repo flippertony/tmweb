@@ -1,0 +1,13 @@
+<article class="card<%= locals.variant ? ' card-' + variant : '' %>">
+  <% if (a.cover_image && locals.variant !== 'compact') { %>
+  <a class="card-media" href="/articoli/<%= a.slug %>" tabindex="-1" aria-hidden="true"><img src="<%= a.cover_image %>" alt="" loading="lazy" decoding="async" width="640" height="360"></a>
+  <% } else if (locals.variant !== 'compact') { %>
+  <a class="card-media card-media-gen" href="/articoli/<%= a.slug %>" tabindex="-1" aria-hidden="true" style="--c:<%= a.category_color || '#4f46e5' %>"><span><%= (a.category_name || 'News') %></span></a>
+  <% } %>
+  <div class="card-body">
+    <% if (a.category_name) { %><a class="pill" href="/categoria/<%= a.category_slug %>" style="--c:<%= a.category_color || '#4f46e5' %>"><%= a.category_name %></a><% } %>
+    <h3 class="card-title"><a href="/articoli/<%= a.slug %>"><%= a.title %></a></h3>
+    <% if (locals.variant !== 'compact' && (a.excerpt || a.tldr)) { %><p class="card-excerpt"><%= h.truncate(a.excerpt || h.stripMd(a.tldr), 150) %></p><% } %>
+    <p class="card-meta"><time datetime="<%= a.published_at %>"><%= h.fmtDate(a.published_at) %></time> · <%= a.reading_time %> min<% if (a.sponsored) { %> · <span class="badge">Sponsorizzato</span><% } %></p>
+  </div>
+</article>

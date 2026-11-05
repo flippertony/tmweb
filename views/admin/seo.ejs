@@ -1,0 +1,45 @@
+<%- include('_top') %>
+<div class="kpis">
+  <div class="kpi"><span>SEO medio</span><b class="<%= avg.seo >= 80 ? 'good' : avg.seo >= 55 ? 'mid' : 'bad' %>"><%= avg.seo %></b><small>motori di ricerca classici</small></div>
+  <div class="kpi"><span>AEO medio</span><b class="<%= avg.aeo >= 80 ? 'good' : avg.aeo >= 55 ? 'mid' : 'bad' %>"><%= avg.aeo %></b><small>snippet, PAA, assistenti vocali</small></div>
+  <div class="kpi"><span>GEO medio</span><b class="<%= avg.geo >= 80 ? 'good' : avg.geo >= 55 ? 'mid' : 'bad' %>"><%= avg.geo %></b><small>citazioni in ChatGPT, Perplexity, Gemini</small></div>
+</div>
+<div class="cols-2">
+  <section class="panel">
+    <h2>Problemi rilevati</h2>
+    <ul class="issues">
+      <li><b><%= issues.noKeyword %></b> senza keyword principale</li>
+      <li><b><%= issues.noDesc %></b> senza meta description</li>
+      <li><b><%= issues.noCover %></b> senza immagine di copertina</li>
+      <li><b><%= issues.noTldr %></b> senza risposta rapida (AEO)</li>
+      <li><b><%= issues.noFaq %></b> senza FAQ (AEO)</li>
+      <li><b><%= issues.noSources %></b> senza fonti citate (GEO)</li>
+      <li><b><%= issues.thin %></b> sotto le 300 parole (thin content)</li>
+    </ul>
+    <% if (dupKw.length) { %><p class="flash err">Cannibalizzazione: stessa keyword su più articoli — <% dupKw.forEach(function(d){ %><code><%= d.focus_keyword %></code> (<%= d.n %>) <% }) %></p><% } %>
+    <form method="post" action="/admin/seo/ricalcola"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn btn-sm" type="submit">Ricalcola tutti i punteggi e l'indice di ricerca</button></form>
+  </section>
+  <section class="panel">
+    <h2>Infrastruttura automatica</h2>
+    <ul class="checks-static">
+      <li>✓ JSON-LD: Organization, WebSite+SearchAction, NewsArticle, FAQPage, HowTo, BreadcrumbList, Person, Dataset, SoftwareApplication, DefinedTerm</li>
+      <li>✓ <a href="/sitemap.xml" target="_blank">Sitemap</a> + <a href="/sitemap-news.xml" target="_blank">Google News sitemap</a> con immagini</li>
+      <li>✓ <a href="/llms.txt" target="_blank">llms.txt</a> e versione Markdown di ogni articolo (<code>/articoli/slug.md</code>)</li>
+      <li>✓ <a href="/robots.txt" target="_blank">robots.txt</a> con policy separata per crawler di ricerca AI e di addestramento</li>
+      <li>✓ Speakable, canonical, Open Graph, Twitter Card, max-image-preview:large</li>
+      <li>✓ Redirect 301 automatici al cambio slug, URL senza slash finale</li>
+      <li>✓ Link affiliati <code>rel="sponsored nofollow"</code> via /go/ (noindex)</li>
+      <li><%= s.indexnow_enabled === '1' ? '✓' : '○' %> IndexNow <%= s.indexnow_enabled === '1' ? 'attivo' : '— attivalo nelle Impostazioni' %></li>
+    </ul>
+    <p class="hint">Valida i dati strutturati con il <a href="https://search.google.com/test/rich-results?url=<%= encodeURIComponent(siteUrl) %>" target="_blank" rel="noopener">Rich Results Test</a> e lo <a href="https://validator.schema.org/" target="_blank" rel="noopener">Schema Validator</a>.</p>
+  </section>
+</div>
+<section class="panel">
+  <h2>Tutti gli articoli per punteggio</h2>
+  <table class="tbl tbl-list"><thead><tr><th>Titolo</th><th>Keyword</th><th class="num">Parole</th><th class="num">Punteggi</th><th>Mancano</th></tr></thead><tbody>
+  <% rows.forEach(function(r){ const miss = []; if (!r.tldr) miss.push('risposta rapida'); if ((r.faq || '[]') === '[]') miss.push('FAQ'); if ((r.sources || '[]') === '[]') miss.push('fonti'); if (!r.meta_description) miss.push('meta desc'); if (!r.cover_image) miss.push('copertina'); %>
+    <tr><td><a class="strong" href="/admin/articoli/<%= r.id %>"><%= r.title %></a> <% if (r.status === 'draft') { %><span class="tag">bozza</span><% } %></td><td><%= r.focus_keyword || '—' %></td><td class="num"><%= r.word_count %></td><td class="num"><%- include('_scores', { a: r }) %></td><td class="small muted"><%= miss.join(', ') || '—' %></td></tr>
+  <% }) %>
+  </tbody></table>
+</section>
+<%- include('_bottom') %>
